@@ -113,9 +113,12 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-[12px] justify-self-end">
+          {/* При открытом меню кнопка гаснет, чтобы не спорить с крестиком. */}
           <a
             href={appUrl}
-            className="hidden items-center justify-center rounded-[12px] bg-ink px-[20px] py-[10px] text-[14px] leading-[20px] font-semibold tracking-[-0.5px] text-ink-contrast transition duration-[180ms] hover:-translate-y-px hover:bg-[#242424] lg:inline-flex"
+            className={`inline-flex items-center justify-center rounded-[11px] bg-ink px-[14px] py-[8px] text-[14px] leading-[20px] font-semibold tracking-[-0.5px] text-ink-contrast transition duration-[180ms] hover:-translate-y-px hover:bg-[#242424] md:rounded-[12px] md:px-[20px] md:py-[10px] ${
+              isMenuOpen ? 'invisible opacity-0 lg:visible lg:opacity-100' : ''
+            }`}
           >
             {ctaLabel}
           </a>
@@ -149,35 +152,41 @@ export function Header() {
         </div>
       </div>
 
-      {isMenuOpen && (
-        <nav
-          ref={menuRef}
-          id="main-menu"
-          aria-label="Мобильная навигация"
-          onClick={(event) => {
-            if ((event.target as HTMLElement).closest('a')) setIsMenuOpen(false)
-          }}
-          className="pointer-events-auto fixed inset-0 z-51 flex h-dvh w-full animate-menu-panel flex-col overflow-y-auto bg-white px-16 pt-92 pb-16 motion-reduce:animate-none md:px-20 md:pt-104 md:pb-20 lg:hidden"
-        >
-          {mobileNavLinks.map((link, index) => (
-            <a
-              key={link.href}
-              href={link.href}
-              style={{ animationDelay: `${40 + index * 45}ms` }}
-              className="block animate-menu-item border-b border-black/10 py-18 text-u-28 leading-[calc(36/28)] font-medium text-ink motion-reduce:animate-none md:py-20 md:text-u-32 md:leading-[calc(40/32)]"
-            >
-              {link.label}
-            </a>
-          ))}
-
+      {/*
+        Меню всегда в разметке и переключается display, как в оригинале:
+        переход none → flex заново проигрывает анимации появления, а через
+        монтирование компонента этого не добиться.
+      */}
+      <nav
+        ref={menuRef}
+        id="main-menu"
+        aria-label="Мобильная навигация"
+        aria-hidden={!isMenuOpen}
+        onClick={(event) => {
+          if ((event.target as HTMLElement).closest('a')) setIsMenuOpen(false)
+        }}
+        className={`pointer-events-auto fixed inset-0 z-51 h-dvh w-full animate-menu-panel flex-col overflow-y-auto bg-white px-16 pt-92 pb-16 motion-reduce:animate-none md:px-20 md:pt-104 md:pb-20 lg:hidden ${
+          isMenuOpen ? 'flex' : 'hidden'
+        }`}
+      >
+        {mobileNavLinks.map((link, index) => (
           <a
-            href={appUrl}
-            className="mt-auto inline-flex min-h-60 w-full animate-menu-cta items-center justify-center rounded-[calc(12*var(--u))] bg-ink px-20 py-16 text-u-18 font-semibold text-ink-contrast motion-reduce:animate-none md:min-h-64 md:px-24 md:py-18 md:text-u-20"
+            key={link.href}
+            href={link.href}
+            style={{ animationDelay: `${40 + index * 45}ms` }}
+            className="text-u-28 block animate-menu-item border-b border-black/10 py-18 leading-[calc(36/28)] font-medium text-ink motion-reduce:animate-none md:py-20 md:text-u-32 md:leading-[calc(40/32)]"
           >
-            {ctaLabel}
+            {link.label}
           </a>
-        </nav>
-      )}
+        ))}
+
+        <a
+          href={appUrl}
+          className="text-u-18 mt-auto inline-flex min-h-60 w-full animate-menu-cta items-center justify-center rounded-[calc(12*var(--u))] bg-ink px-20 py-16 font-semibold text-ink-contrast motion-reduce:animate-none md:min-h-64 md:px-24 md:py-18 md:text-u-20"
+        >
+          {ctaLabel}
+        </a>
+      </nav>
     </header>
   )
 }

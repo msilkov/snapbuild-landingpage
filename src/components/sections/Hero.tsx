@@ -23,20 +23,21 @@ export function Hero() {
 
             <a
               href={appUrl}
-              className="text-u-13 inline-flex animate-hero-cta items-center justify-center rounded-full bg-white px-14 py-10 leading-[calc(20/14)] font-semibold motion-reduce:animate-none md:px-22 md:py-14 md:text-u-14"
+              className="text-u-13 group inline-flex animate-hero-cta items-center justify-center rounded-[12px] bg-white px-14 py-10 leading-[calc(20/14)] font-semibold transition-[background-color,scale] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:animate-none active:scale-[0.975] md:px-22 md:py-14 md:text-u-14"
             >
-              {/* Единственное цветное пятно в типографике лендинга. */}
-              <span className="bg-[linear-gradient(90deg,#ff6d3c,#ff6ba7_46%,#bb6dff)] bg-clip-text text-transparent">
+              {/* Единственное цветное пятно в типографике: под градиентом
+                  спрятан белый блик, он проезжает по тексту при наведении. */}
+              <span className="bg-[image:var(--btn-shine),var(--brand-gradient)] bg-[length:400%_100%,100%_100%] bg-[position:100%_50%,0%_50%] bg-no-repeat bg-clip-text text-transparent group-hover:animate-btn-shine group-focus-visible:animate-btn-shine motion-reduce:animate-none">
                 {ctaLabel}
               </span>
             </a>
           </div>
 
-          <div className="w-[calc(100%_-_32*var(--u))] animate-hero-media motion-reduce:animate-none md:w-770 lg:mt-20 lg:w-1190">
+          <div className="w-[calc(100%_-_32*var(--u))] animate-hero-media motion-reduce:animate-none md:w-full lg:mt-20">
             <img
               src={asset('hero-snapbuild-2026-08-07-v2.webp')}
               alt="Интерфейс Снэпбилда: редактор материалов с подключённой дизайн-системой"
-              className="block aspect-[2632/1386] w-full rounded-t-[6px] object-cover md:rounded-t-[24px]"
+              className="block aspect-[2632/1386] h-full w-full rounded-t-[6px] object-cover object-center md:rounded-t-[16px]"
             />
           </div>
         </div>
