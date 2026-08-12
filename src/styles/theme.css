@@ -41,6 +41,22 @@
   }
 }
 
+/*
+  Единственный цвет в макете. Фирменный градиент живёт в тексте двух главных
+  кнопок, а поверх него при наведении проезжает белый блик.
+*/
+:root {
+  --brand-gradient: linear-gradient(90deg, #ff6d3c 0%, #ff6ba7 46%, #bb6dff 100%);
+  --btn-shine: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 255 255 / 0) 37%,
+    #fff 50%,
+    rgb(255 255 255 / 0) 63%,
+    rgb(255 255 255 / 0) 100%
+  );
+}
+
 @theme {
   /*
     В оригинале TT Commons Pro (TypeType, коммерческая лицензия).
@@ -85,6 +101,49 @@
   --animate-hero-copy: fade-in 1800ms var(--ease-motion) 160ms both;
   --animate-hero-cta: fade-in 1100ms var(--ease-motion) 420ms both;
   --animate-hero-media: hero-media-enter 1100ms var(--ease-motion) 220ms both;
+
+  /*
+    Логобар. На десктопе строка статична, логотипы проявляются лесенкой при
+    попадании в экран; ниже 1024px строка едет бесконечной лентой, поэтому
+    содержимое дублируется и сдвигается ровно на половину дорожки с зазором.
+  */
+  --animate-logo-reveal: logo-reveal 520ms var(--ease-motion) both;
+  --animate-marquee: marquee 12.1s linear infinite;
+
+  @keyframes logo-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  --animate-btn-shine: btn-shine 750ms linear 1;
+
+  @keyframes btn-shine {
+    from {
+      background-position:
+        100% 50%,
+        0% 50%;
+    }
+    to {
+      background-position:
+        0% 50%,
+        0% 50%;
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(-50% - var(--marquee-half-gap)), 0, 0);
+    }
+  }
 
   /* Раскрытие мобильного меню, перенесено из overrides.css */
   --animate-menu-panel: fade-in 140ms ease both;
