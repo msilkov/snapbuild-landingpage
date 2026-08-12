@@ -5,9 +5,7 @@ type ContainerProps = {
   className?: string
 }
 
-/** Горизонтальные поля страницы. Повторяет vw-отступы исходного лендинга. */
+/** Горизонтальные поля страницы: 16 / 20 / 40 пикселей макета, как в оригинале. */
 export function Container({ children, className = '' }: ContainerProps) {
-  return (
-    <div className={`mx-auto w-full max-w-[1920px] px-gutter ${className}`}>{children}</div>
-  )
+  return <div className={`mx-auto w-full px-16 md:px-20 lg:px-40 ${className}`}>{children}</div>
 }
