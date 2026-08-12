@@ -1,0 +1,84 @@
+@import 'tailwindcss';
+
+/*
+  Токены сняты с исходного лендинга snapbuild.ru (assets/css/38d310b04484773c.css).
+  Оригинал построен на Tailwind v4 поверх собственного слоя семантических
+  переменных, поэтому здесь повторён тот же подход: значения объявлены один раз
+  и дальше используются только через утилиты.
+*/
+@theme {
+  /*
+    В оригинале TT Commons Pro (TypeType, коммерческая лицензия).
+    Onest взят как ближайший открытый аналог по пропорциям и поддержке кириллицы.
+  */
+  --font-sans: 'Onest Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /*
+    Палитра монохромная. В CSS оригинала объявлен синий #3758F9, но он
+    переопределён на нейтральные значения, поэтому в макете цвета нет.
+  */
+  --color-canvas: #f2f2f4;
+  --color-surface: #ffffff;
+  --color-border: #e5e5e7;
+  --color-ink: #000000;
+  --color-ink-muted: #5a5b62;
+  --color-ink-subtle: rgb(0 0 0 / 0.6);
+  --color-ink-contrast: #ffffff;
+  --color-glass: rgb(0 0 0 / 0.03);
+
+  /* Радиусы исходной системы: 4 / 8 / 12 / 16 / 24 px */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* Шкала заголовков с исходного сайта */
+  --text-display: 4.5rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+
+  --text-h1: 3rem;
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 700;
+
+  --text-h2: 2.5rem;
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 700;
+
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--font-weight: 600;
+
+  --text-lead: 1.25rem;
+  --text-lead--line-height: 1.45;
+
+  /*
+    Оригинал не использует фиксированный контейнер: отступы заданы в vw
+    от макета 1920px (60px по краям) и 375px на мобильном. Clamp повторяет
+    это поведение и одновременно не даёт странице расползтись на 4K.
+  */
+  --spacing-gutter: clamp(1.25rem, 3.125vw, 3.75rem);
+  --spacing-section: clamp(3.5rem, 6vw, 7rem);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+}
