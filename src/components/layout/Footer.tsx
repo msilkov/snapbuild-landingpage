@@ -8,14 +8,18 @@ const isExternal = (href: string) => href.startsWith('http')
 
 /**
  * Футер: слева логотип со слоганом, справа три колонки ссылок, снизу
- * копирайт и почта. Колонки схлопываются в две на планшете и в одну
- * на мобильном, где почта переезжает в колонку «Контакты».
+ * копирайт и почта. Ниже 1024px колонки встают в две и переносятся, а почта
+ * переезжает в «Контакты».
+ *
+ * Вертикальные поля у оригинала не сжимаются вместе с макетом: до 1024px это
+ * ровно 64 браузерных пикселя сверху, и только на десктопе поле переходит
+ * в пиксели макета. Снизу на мобильном оригинал режет поле до 24.
  */
 export function Footer() {
   return (
     <footer
       id="footer"
-      className="flex flex-col gap-32 bg-canvas px-16 pt-24 pb-24 md:gap-40 md:px-20 md:pt-32 md:pb-32 lg:px-40 lg:pb-40"
+      className="flex flex-col gap-32 bg-canvas px-16 pt-[64px] pb-24 md:gap-40 md:px-20 md:pb-[64px] lg:px-40 lg:pt-64 lg:pb-64"
     >
       <div className="flex flex-col gap-32 lg:flex-row lg:items-start lg:justify-between lg:gap-48">
         <div className="flex flex-col gap-12 md:gap-16 lg:flex-[0_0_calc(297*var(--u))]">
@@ -33,9 +37,16 @@ export function Footer() {
           </p>
         </div>
 
+        {/*
+          Две колонки до 1024px: «Навигация» и «Документация» рядом, «Контакты»
+          под ними. Оригинал добивается этого переносом по ширине контента, но
+          у нас так не выйдет — Onest шире оригинального TT Commons Pro, и при
+          одинаковом кегле пара колонок перестаёт помещаться в 320. Поэтому
+          колонки заданы сеткой явно, а не отданы на автоперенос.
+        */}
         <nav
           aria-label="Подвал"
-          className="grid grid-cols-1 gap-24 md:grid-cols-2 md:gap-x-24 md:gap-y-32 lg:grid-cols-3 lg:gap-48"
+          className="grid grid-cols-2 items-start gap-24 md:grid-cols-3 md:gap-x-24 md:gap-y-32 lg:gap-48"
         >
           {footer.columns.map((column) => (
             <div key={column.title} className="flex flex-col gap-12 md:gap-16">

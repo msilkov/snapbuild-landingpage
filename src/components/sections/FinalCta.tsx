@@ -10,12 +10,15 @@ const title = {
  * Финальный экран: та же градиентная карточка, что и в hero, плюс три слоя
  * декоративной пыли — по одному на каждый макет, они складываются с фоном
  * режимом plus-lighter.
+ *
+ * Поле сверху на мобильном вдвое меньше нижнего: базовые 64 пикселя макета
+ * перебиты у оригинала отдельным правилом на #cta до 32.
  */
 export function FinalCta() {
 	return (
 		<section
 			id='cta'
-			className='relative flex flex-col items-center justify-center overflow-hidden rounded-[calc(32*var(--u))] bg-white bg-[linear-gradient(157deg,#ffffff_11%,#ffcdb3_33%,#ffa4b6_53%,#ffb2e9_67%,#d4d6ff_90%,#d4d6ff_97%,#ffffff_100%)] px-32 py-64 md:px-0 md:py-72 lg:py-96'
+			className='relative flex flex-col items-center justify-center overflow-hidden rounded-[calc(32*var(--u))] bg-white bg-[linear-gradient(157deg,#ffffff_11%,#ffcdb3_33%,#ffa4b6_53%,#ffb2e9_67%,#d4d6ff_90%,#d4d6ff_97%,#ffffff_100%)] px-32 pt-32 pb-64 md:px-0 md:py-72 lg:py-[128px]'
 		>
 			<div
 				aria-hidden
@@ -45,7 +48,13 @@ export function FinalCta() {
 						а своя утилита в каскаде стоит после базовой и перебивала бы её
 						независимо от брейкпоинта.
 					*/}
-					<h2 className='text-center text-[calc(32*var(--u))] leading-[calc(40/32)] font-medium tracking-[calc(-1.25*var(--u))] md:text-[calc(52*var(--u))] md:leading-[calc(64/52)] lg:text-[40px]'>
+					{/*
+						Кегль снят не с .dds-launch-title, а с сохранённых стилей CMS —
+						они специфичнее и задают другие числа: 24 пикселя макета на
+						мобильном и 36 от макета 768 на планшете. На десктопе размер
+						перебивает уже правило по id и ставит фиксированные 48px.
+					*/}
+					<h2 className='text-center text-[calc(24*var(--u))] leading-[calc(40/32)] font-medium tracking-[calc(-1.25*var(--u))] md:text-[calc(36/7.68*1vw)] md:leading-[calc(64/52)] lg:text-[48px]'>
 						<span className='lg:hidden'>{title.narrow}</span>
 						<span className='hidden lg:inline'>
 							{title.wide[0]}
