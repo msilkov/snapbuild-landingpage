@@ -181,11 +181,17 @@ export function UseCases() {
                   </p>
 
                   <span className="absolute inset-x-0 bottom-[calc(-1*var(--rule))] h-[var(--rule)] bg-black/10">
+                    {/*
+                      Пустая полоса задана инлайном, а не утилитой scale-x-0:
+                      она эмитит свойство scale, оно перемножается с transform
+                      от кадра анимации и обнуляет его — полоса не появлялась бы.
+                    */}
                     <span
                       ref={(node) => {
                         fillsRef.current[index] = node
                       }}
-                      className="block h-full w-full origin-left scale-x-0 bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
+                      style={{ transform: 'scaleX(0)' }}
+                      className="block h-full w-full origin-left bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
                     />
                   </span>
                 </button>

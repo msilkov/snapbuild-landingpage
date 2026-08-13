@@ -20,11 +20,14 @@ function Counter({ metric, isActive }: { metric: Metric; isActive: boolean }) {
   const fillRef = useRef<HTMLSpanElement>(null)
   const text = `${metric.value}${metric.suffix ?? ''}`
 
-  // В разметке стоит конечное значение — так его видно и до срабатывания
+  // В разметке стоят конечные значения — так их видно и до срабатывания
   // наблюдателя. Обнуляем до первой отрисовки, иначе мелькнёт результат.
+  // Полоса обнуляется здесь же, а не утилитой scale-x-0: та эмитит свойство
+  // scale, оно перемножается с transform от кадра анимации и обнуляет его.
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return
     if (valueRef.current) valueRef.current.textContent = `0${metric.suffix ?? ''}`
+    if (fillRef.current) fillRef.current.style.transform = 'scaleX(0)'
   }, [metric.suffix])
 
   useEffect(() => {
@@ -64,7 +67,7 @@ function Counter({ metric, isActive }: { metric: Metric; isActive: boolean }) {
       <span className="mt-12 block h-px w-full bg-white/15 md:mt-16">
         <span
           ref={fillRef}
-          className="block h-full w-full origin-left scale-x-0 bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)] motion-reduce:scale-x-100"
+          className="block h-full w-full origin-left bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
         />
       </span>
     </>
