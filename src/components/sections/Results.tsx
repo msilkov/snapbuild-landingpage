@@ -5,26 +5,22 @@ import { useInView } from '../../lib/useInView'
 
 const COUNT_DURATION = 1400
 
-/** Быстрый разгон и мягкая остановка: к концу счётчик почти стоит. */
 const easeOut = (progress: number) => 1 - (1 - progress) ** 3
 
 const prefersReducedMotion = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-/**
- * Одно число полосы. Счётчик и полоска под ним идут мимо состояния React:
- * это две записи в DOM за кадр против перерисовки всей секции.
- */
 function Counter({ metric, isActive }: { metric: Metric; isActive: boolean }) {
   const valueRef = useRef<HTMLSpanElement>(null)
   const fillRef = useRef<HTMLSpanElement>(null)
   const text = `${metric.value}${metric.suffix ?? ''}`
 
-  // В разметке стоит конечное значение — так его видно и до срабатывания
-  // наблюдателя. Обнуляем до первой отрисовки, иначе мелькнёт результат.
+  // Полоса обнуляется здесь, а не утилитой масштаба: та ставит свойство
+  // scale, оно перемножается с transform из кадра анимации.
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return
     if (valueRef.current) valueRef.current.textContent = `0${metric.suffix ?? ''}`
+    if (fillRef.current) fillRef.current.style.transform = 'scaleX(0)'
   }, [metric.suffix])
 
   useEffect(() => {
@@ -53,29 +49,22 @@ function Counter({ metric, isActive }: { metric: Metric; isActive: boolean }) {
   return (
     <>
       <p className="text-u-44 leading-[1.05] font-medium tracking-[calc(-2*var(--u))] text-white md:text-u-64 md:tracking-[calc(-3*var(--u))] lg:text-u-72">
-        {/* Меняющееся число для скринридера — шум, поэтому озвучивается итог. */}
         <span ref={valueRef} aria-hidden>
           {text}
         </span>
         <span className="sr-only">{text}</span>
       </p>
 
-      {/* Та же полоска прогресса, что под активным пунктом «Возможностей». */}
       <span className="mt-12 block h-px w-full bg-white/15 md:mt-16">
         <span
           ref={fillRef}
-          className="block h-full w-full origin-left scale-x-0 bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)] motion-reduce:scale-x-100"
+          className="block h-full w-full origin-left bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
         />
       </span>
     </>
   )
 }
 
-/**
- * Полоса результатов после таблицы сравнения. Единственный тёмный блок на
- * странице: тот же #0d0d0d, что у кадра в «Возможностях», — так полоса
- * отделяет сравнение от блока безопасности, не вводя нового цвета.
- */
 export function Results() {
   const [bandRef, isInView] = useInView<HTMLDivElement>(0.3)
 

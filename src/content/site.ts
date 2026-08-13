@@ -1,14 +1,10 @@
-/** Тексты и ссылки общих элементов страницы. Разметка их не хранит. */
-
 export type NavLink = {
   label: string
   href: string
 }
 
-/** Приложение, куда ведут все кнопки «Начать сейчас». */
 export const appUrl = 'https://builder.snapbuild.ru/'
 
-/** «Тарифы» — пункт новой секции, у оригинала в шапке его нет. */
 export const navLinks: NavLink[] = [
   { label: 'Продукт', href: '#process' },
   { label: 'Возможности', href: '#use-cases' },
@@ -17,7 +13,6 @@ export const navLinks: NavLink[] = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-/** В мобильном меню оригинала «Возможности» стоят первыми. */
 export const mobileNavLinks: NavLink[] = [
   navLinks[1],
   navLinks[0],
@@ -29,15 +24,15 @@ export const mobileNavLinks: NavLink[] = [
 export const ctaLabel = 'Начать сейчас'
 
 export const hero = {
-  title: 'Платформа, где все создается в рамках вашего бренда и дизайн-системы',
+  title: 'Платформа, где все создается в рамках вашего бренда и дизайн-системы',
   subtitle:
     'Подключите дизайн-систему к Снэпбилду, чтобы каждый участник команды мог создавать профессиональные материалы в фирменном стиле за минуты, а не дни.',
 }
 
 export const footer = {
-  tagline: 'Платформа, где все создается в рамках вашего бренда и дизайн-системы',
+  tagline: 'Платформа, где все создается в рамках вашего бренда и дизайн-системы',
   email: 'hey@snapbuild.ru',
-  copyright: '© Сгенерировано в Снэпбилде. Все права защищены.',
+  copyright: '© Сгенерировано в Снэпбилде. Все права защищены.',
   columns: [
     {
       title: 'Навигация',

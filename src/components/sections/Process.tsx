@@ -3,13 +3,8 @@ import { process } from '../../content/process'
 import { asset } from '../../lib/asset'
 
 const mediaClass =
-  'block h-343 w-full rounded-[16px] object-cover md:aspect-square md:h-auto md:rounded-[calc(12*var(--u))] lg:aspect-auto lg:h-432 lg:rounded-[20px]'
+  'block aspect-[2/1] w-full rounded-[6px] object-cover md:aspect-square md:rounded-[calc(12*var(--u))] lg:aspect-auto lg:h-432 lg:rounded-[20px]'
 
-/**
- * «Одна платформа — весь маркетинг»: три карточки без подложки, картинка
- * со скруглением и подпись под ней. На планшете картинки становятся
- * квадратными, на мобильном карточки идут в одну колонку.
- */
 export function Process() {
   return (
     <section
@@ -49,7 +44,7 @@ export function Process() {
             )}
 
             <div className="flex flex-col gap-[4px] pt-[12px] md:pt-[16px] lg:h-[100px]">
-              <h3 className="text-u-20 leading-[1.4] font-medium tracking-[calc(-0.5*var(--u))] md:leading-[calc(28*var(--u))] lg:text-u-24 lg:leading-[1.3334] lg:tracking-[calc(-1*var(--u))]">
+              <h3 className="text-u-16 leading-[calc(22*var(--u))] font-medium tracking-normal md:text-u-20 md:leading-[calc(28*var(--u))] md:tracking-[calc(-0.5*var(--u))] lg:text-u-24 lg:leading-[1.3334] lg:tracking-[calc(-1*var(--u))]">
                 <span className="md:hidden">{step.nameMobile}</span>
                 <span className="hidden md:inline">{step.name}</span>
               </h3>

@@ -5,11 +5,10 @@ type ButtonVariant = 'primary' | 'secondary'
 type ButtonProps = {
   children: ReactNode
   variant?: ButtonVariant
-  /** Если передан href, кнопка рендерится ссылкой. */
+
   href?: string
   className?: string
 } & Omit<ComponentPropsWithoutRef<'button'>, 'className'>
-
 const base =
   'inline-flex items-center justify-center rounded-full px-6 py-3 text-base font-medium transition-colors duration-200'
 

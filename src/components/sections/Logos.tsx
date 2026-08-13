@@ -18,11 +18,6 @@ const itemClass =
 const imageClass = 'block h-auto w-[calc(var(--w-m)*var(--u))] md:w-[calc(var(--w)*var(--u))]'
 const groupClass = 'flex items-end gap-40 md:gap-48'
 
-/**
- * Логобар. Выше 1024px строка стоит на месте, а логотипы проявляются лесенкой,
- * когда секция попадает в экран. Ниже — едет бесконечной лентой: содержимое
- * дублируется и дорожка сдвигается на половину своей ширины вместе с зазором.
- */
 export function Logos() {
   const [isRevealed, setIsRevealed] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
@@ -49,13 +44,11 @@ export function Logos() {
       id="logos"
       className="mt-16 flex flex-col gap-24 overflow-hidden bg-canvas md:mt-[32px] lg:overflow-visible"
     >
-      {/* В разметке подпись идёт первой, а показывается под логотипами. */}
       <p className="text-u-14 order-2 px-16 text-center leading-[1.4286] text-ink-subtle md:px-20 md:text-u-16 md:leading-[1.5] md:tracking-[calc(-0.5*var(--u))] lg:px-40">
         {logosEyebrow}
       </p>
 
       <div className="flex w-max animate-marquee items-end justify-start gap-40 [--marquee-half-gap:calc(20*var(--u))] motion-reduce:animate-none md:gap-48 md:[--marquee-half-gap:calc(24*var(--u))] md:[animation-duration:15.5s] lg:w-auto lg:animate-none lg:justify-center lg:gap-107 lg:px-40">
-        {/* На десктопе обёртка растворяется, и логотипы становятся детьми дорожки. */}
         <div className={`${groupClass} lg:contents`}>
           {trackItems.map((logo) => (
             <div

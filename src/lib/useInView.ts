@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-/**
- * Однократное срабатывание, когда элемент попал в экран.
- *
- * Тот же приём, что в логобаре: наблюдатель отключается сразу после первого
- * пересечения — все появления на странице играют по одному разу, обратно
- * при скролле вверх ничего не гаснет.
- */
 export function useInView<T extends HTMLElement>(threshold = 0.2) {
   const ref = useRef<T>(null)
   const [isInView, setIsInView] = useState(false)

@@ -6,14 +6,6 @@ const title = {
 	narrow: 'Профессиональные материалы в фирменном стиле за минуты, а не дни',
 };
 
-/**
- * Финальный экран: та же градиентная карточка, что и в hero, плюс три слоя
- * декоративной пыли — по одному на каждый макет, они складываются с фоном
- * режимом plus-lighter.
- *
- * Поле сверху на мобильном вдвое меньше нижнего: базовые 64 пикселя макета
- * перебиты у оригинала отдельным правилом на #cta до 32.
- */
 export function FinalCta() {
 	return (
 		<section
@@ -43,17 +35,6 @@ export function FinalCta() {
 
 			<div className='relative z-1 flex w-full flex-col items-center gap-24 px-16 md:max-w-658 md:gap-32 md:px-0 lg:max-w-898'>
 				<div className='flex flex-col items-center gap-12 md:gap-16'>
-					{/*
-						Кегль здесь не через text-u-*: на десктопе размер фиксированный,
-						а своя утилита в каскаде стоит после базовой и перебивала бы её
-						независимо от брейкпоинта.
-					*/}
-					{/*
-						Кегль снят не с .dds-launch-title, а с сохранённых стилей CMS —
-						они специфичнее и задают другие числа: 24 пикселя макета на
-						мобильном и 36 от макета 768 на планшете. На десктопе размер
-						перебивает уже правило по id и ставит фиксированные 48px.
-					*/}
 					<h2 className='text-center text-[calc(24*var(--u))] leading-[calc(40/32)] font-medium tracking-[calc(-1.25*var(--u))] md:text-[calc(36/7.68*1vw)] md:leading-[calc(64/52)] lg:text-[48px]'>
 						<span className='lg:hidden'>{title.narrow}</span>
 						<span className='hidden lg:inline'>

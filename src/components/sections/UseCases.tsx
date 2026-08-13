@@ -1,32 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
 import type { TouchEvent } from 'react'
+import type { Shot } from '../ui/Lightbox'
 import { useCaseTabs, useCasesTitle } from '../../content/useCases'
 import { asset } from '../../lib/asset'
+import { isPhone } from '../../lib/isPhone'
 
-/** Сколько держится один пункт до автоматического перехода к следующему. */
 const POINT_DURATION = 8000
 const POINTS_PER_TAB = 4
 const TOTAL_POINTS = useCaseTabs.length * POINTS_PER_TAB
 const SWIPE_THRESHOLD = 40
 
+const SWIPE_ANIM_DURATION = 280
+
+// Имена классов литералами: сканер Tailwind читает исходник текстом
+// и склеенное имя не увидит.
+const swipeClass = {
+  next: 'max-md:animate-slide-in-next',
+  prev: 'max-md:animate-slide-in-prev',
+} as const
+
 const allMedia = useCaseTabs.flatMap((tab) => tab.items.map((item) => item.media))
 
-/**
- * «Любой контент в фирменном стиле»: пять вкладок по четыре пункта.
- * Пункты сменяются сами каждые восемь секунд, полоса под активным показывает
- * оставшееся время; дойдя до конца вкладки, лента переходит к следующей.
- *
- * Ниже 1024px кадр встаёт над списком, а не сбоку: order у него нулевой,
- * у пунктов — первый. Сами пункты порядок не меняют и активный никуда не
- * переезжает, он раскрывается на своём месте — иначе при каждой смене список
- * перекладывался бы прямо во время анимации высоты. На мобильном кадр
- * листается свайпом.
- */
-export function UseCases() {
+export function UseCases({ onOpenShot }: { onOpenShot: (shot: Shot) => void }) {
   const [tabIndex, setTabIndex] = useState(0)
   const [pointIndex, setPointIndex] = useState(0)
+  const [swipe, setSwipe] = useState<'next' | 'prev' | null>(null)
   const fillsRef = useRef<(HTMLSpanElement | null)[]>([])
   const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const swipeTimer = useRef<number>(0)
+
+  const swiped = useRef(false)
+
+  useEffect(() => () => window.clearTimeout(swipeTimer.current), [])
 
   const goToFlat = (flat: number) => {
     const next = ((flat % TOTAL_POINTS) + TOTAL_POINTS) % TOTAL_POINTS
@@ -34,19 +39,13 @@ export function UseCases() {
     setPointIndex(next % POINTS_PER_TAB)
   }
 
-  // Прогресс идёт мимо состояния: перерисовывать секцию с двумя десятками
-  // картинок каждый кадр незачем, меняется только ширина одной полосы.
   useEffect(() => {
-    // Обнуляем все полосы, а не одну активную: transform лежит инлайном, и
-    // у пройденных пунктов он иначе так и остаётся закрашенным до конца.
     fillsRef.current.forEach((fill) => {
       if (fill) fill.style.transform = 'scaleX(0)'
     })
 
     const next = () => goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + 1)
 
-    // При отключённой анимации лента всё равно листается — двигается контент,
-    // а не картинка, — но полоса не ползёт, а просто ждёт своей смены.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const timer = window.setTimeout(next, POINT_DURATION)
       return () => window.clearTimeout(timer)
@@ -81,10 +80,17 @@ export function UseCases() {
     const dy = event.changedTouches[0].clientY - start.y
     if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return
 
+    swiped.current = true
+
+    setSwipe(dx < 0 ? 'next' : 'prev')
+    window.clearTimeout(swipeTimer.current)
+    swipeTimer.current = window.setTimeout(() => setSwipe(null), SWIPE_ANIM_DURATION)
+
     goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + (dx < 0 ? 1 : -1))
   }
 
-  const activeMedia = useCaseTabs[tabIndex].items[pointIndex].media
+  const activeItem = useCaseTabs[tabIndex].items[pointIndex]
+  const activeMedia = activeItem.media
 
   return (
     <section
@@ -93,10 +99,6 @@ export function UseCases() {
     >
       <div className="flex flex-col gap-32 md:gap-40">
         <header className="flex flex-col items-stretch gap-16 lg:gap-20">
-          {/*
-            Кегль не через text-u-*: на десктопе он задан clamp-ом, а своя
-            утилита стоит в каскаде после базовой и перебивала бы её.
-          */}
           <h2 className="text-[calc(32*var(--u))] leading-[1.25] font-medium tracking-[calc(-1*var(--u))] whitespace-pre-wrap md:text-[calc(52*var(--u))] md:leading-[1.2308] lg:text-[clamp(34px,3.2vw,46px)] lg:leading-[1.1] lg:whitespace-nowrap">
             <span className="md:hidden">{useCasesTitle.narrow}</span>
             <span className="hidden md:inline">{useCasesTitle.wide}</span>
@@ -131,7 +133,6 @@ export function UseCases() {
         </header>
 
         <div className="flex flex-col gap-10 md:gap-24 lg:grid lg:grid-cols-[24.5%_minmax(0,1fr)] lg:items-stretch lg:gap-32">
-          {/* Ниже 1024px обёртка растворяется, и пункты становятся соседями кадра. */}
           <div className="contents lg:flex lg:flex-col lg:justify-end">
             {useCaseTabs[tabIndex].items.map((item, index) => {
               const isActive = index === pointIndex
@@ -150,7 +151,6 @@ export function UseCases() {
                     {item.title}
                   </h3>
 
-                  {/* Описание раскрывается высотой грид-строки: анимировать auto нельзя. */}
                   <p
                     className={`text-u-14 grid leading-[calc(20*var(--u))] font-medium text-ink-muted transition-[grid-template-rows,opacity] duration-500 ease-menu md:leading-[calc(24*var(--u))] lg:leading-[1.4286] ${
                       isActive ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
@@ -160,11 +160,14 @@ export function UseCases() {
                   </p>
 
                   <span className="absolute inset-x-0 bottom-[calc(-1*var(--rule))] h-[var(--rule)] bg-black/10">
+                    {/* Пустая полоса — инлайном: утилита масштаба ставит свойство
+                        scale, оно перемножается с transform из кадра анимации. */}
                     <span
                       ref={(node) => {
                         fillsRef.current[index] = node
                       }}
-                      className="block h-full w-full origin-left scale-x-0 bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
+                      style={{ transform: 'scaleX(0)' }}
+                      className="block h-full w-full origin-left bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
                     />
                   </span>
                 </button>
@@ -177,9 +180,18 @@ export function UseCases() {
             onTouchStart={(event) => {
               const touch = event.touches[0]
               touchStart.current = { x: touch.clientX, y: touch.clientY }
+              swiped.current = false
             }}
             onTouchEnd={onTouchEnd}
-            className="relative order-0 aspect-square touch-pan-y overflow-hidden rounded-[6px] bg-[#0d0d0d] md:aspect-[770/432] md:rounded-[calc(12*var(--u))] lg:aspect-[995/558]"
+            onClick={() => {
+              if (swiped.current || !isPhone()) return
+              onOpenShot({
+                src: asset(activeMedia),
+                title: activeItem.title,
+                desc: activeItem.desc,
+              })
+            }}
+            className="relative order-0 aspect-square touch-pan-y overflow-hidden rounded-[6px] bg-[#0d0d0d] max-md:cursor-zoom-in md:aspect-[770/432] md:rounded-[calc(12*var(--u))] lg:aspect-[995/558]"
           >
             {allMedia.map((media, index) => (
               <img
@@ -188,7 +200,9 @@ export function UseCases() {
                 alt=""
                 loading={index === 0 ? 'eager' : 'lazy'}
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-                  media === activeMedia ? 'opacity-100' : 'opacity-0'
+                  media === activeMedia
+                    ? `opacity-100 ${swipe ? `${swipeClass[swipe]} motion-reduce:animate-none` : ''}`
+                    : 'opacity-0'
                 }`}
               />
             ))}

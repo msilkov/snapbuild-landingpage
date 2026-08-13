@@ -2,18 +2,9 @@ import { pricing } from '../../content/pricing'
 import { asset } from '../../lib/asset'
 
 type PricingProps = {
-  /** Выбор уезжает в форму заявки: она стоит ниже отзывов, якорем. */
   onSelectPlan: (planId: string) => void
 }
 
-/**
- * «Три формата подключения». Сумм в карточках нет — публичного прайса у
- * платформы тоже нет, поэтому на месте цены стоит формат доступа, а разговор
- * о деньгах уводится в заявку.
- *
- * Средняя карточка обведена фирменным градиентом — той же рамкой, что колонка
- * продукта в таблице сравнения. Кнопка ведёт в форму и подставляет туда тариф.
- */
 export function Pricing({ onSelectPlan }: PricingProps) {
   return (
     <section
@@ -46,7 +37,6 @@ export function Pricing({ onSelectPlan }: PricingProps) {
               {plan.name}
             </h3>
 
-            {/* На месте цены — формат доступа, набранный как цена. */}
             <p className="text-u-14 mt-12 inline-flex w-fit rounded-[10px] bg-[#f5f5f7] px-10 py-6 leading-[1.4286] font-semibold md:mt-16 md:text-u-15">
               {plan.access}
             </p>
