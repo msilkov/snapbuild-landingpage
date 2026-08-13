@@ -17,6 +17,8 @@ import { Roles } from './components/sections/Roles'
 import { Security } from './components/sections/Security'
 import { Testimonials } from './components/sections/Testimonials'
 import { UseCases } from './components/sections/UseCases'
+import type { Shot } from './components/ui/Lightbox'
+import { Lightbox } from './components/ui/Lightbox'
 
 export default function App() {
   /*
@@ -25,15 +27,16 @@ export default function App() {
     отзывы, поэтому связать их напрямую нельзя.
   */
   const [requestedPlan, setRequestedPlan] = useState('unset')
+  const [shot, setShot] = useState<Shot | null>(null)
 
   return (
     <>
       <Header />
       <main>
-        <Hero />
+        <Hero onOpenShot={setShot} />
         <Logos />
         <Process />
-        <UseCases />
+        <UseCases onOpenShot={setShot} />
         <Roles />
         <Compare />
         <Results />
@@ -48,6 +51,7 @@ export default function App() {
       </main>
       <Footer />
       <CookieBanner />
+      <Lightbox shot={shot} onClose={() => setShot(null)} />
     </>
   )
 }

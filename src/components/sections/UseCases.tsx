@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import type { TouchEvent } from 'react'
+import type { Shot } from '../ui/Lightbox'
 import { useCaseTabs, useCasesTitle } from '../../content/useCases'
 import { asset } from '../../lib/asset'
+import { isPhone } from '../../lib/isPhone'
 
 /** Сколько держится один пункт до автоматического перехода к следующему. */
 const POINT_DURATION = 8000
@@ -33,13 +35,15 @@ const allMedia = useCaseTabs.flatMap((tab) => tab.items.map((item) => item.media
  * перекладывался бы прямо во время анимации высоты. На мобильном кадр
  * листается свайпом.
  */
-export function UseCases() {
+export function UseCases({ onOpenShot }: { onOpenShot: (shot: Shot) => void }) {
   const [tabIndex, setTabIndex] = useState(0)
   const [pointIndex, setPointIndex] = useState(0)
   const [swipe, setSwipe] = useState<'next' | 'prev' | null>(null)
   const fillsRef = useRef<(HTMLSpanElement | null)[]>([])
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const swipeTimer = useRef<number>(0)
+  // Свайп на тачскрине заканчивается ещё и кликом; без флага он открывал бы кадр.
+  const swiped = useRef(false)
 
   useEffect(() => () => window.clearTimeout(swipeTimer.current), [])
 
@@ -96,6 +100,8 @@ export function UseCases() {
     const dy = event.changedTouches[0].clientY - start.y
     if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return
 
+    swiped.current = true
+
     // Направление держим только на время выезда: дальше кадры снова просто
     // проявляются, иначе автопереключение уезжало бы вбок само по себе.
     setSwipe(dx < 0 ? 'next' : 'prev')
@@ -105,7 +111,8 @@ export function UseCases() {
     goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + (dx < 0 ? 1 : -1))
   }
 
-  const activeMedia = useCaseTabs[tabIndex].items[pointIndex].media
+  const activeItem = useCaseTabs[tabIndex].items[pointIndex]
+  const activeMedia = activeItem.media
 
   return (
     <section
@@ -204,9 +211,18 @@ export function UseCases() {
             onTouchStart={(event) => {
               const touch = event.touches[0]
               touchStart.current = { x: touch.clientX, y: touch.clientY }
+              swiped.current = false
             }}
             onTouchEnd={onTouchEnd}
-            className="relative order-0 aspect-square touch-pan-y overflow-hidden rounded-[6px] bg-[#0d0d0d] md:aspect-[770/432] md:rounded-[calc(12*var(--u))] lg:aspect-[995/558]"
+            onClick={() => {
+              if (swiped.current || !isPhone()) return
+              onOpenShot({
+                src: asset(activeMedia),
+                title: activeItem.title,
+                desc: activeItem.desc,
+              })
+            }}
+            className="relative order-0 aspect-square touch-pan-y overflow-hidden rounded-[6px] bg-[#0d0d0d] max-md:cursor-zoom-in md:aspect-[770/432] md:rounded-[calc(12*var(--u))] lg:aspect-[995/558]"
           >
             {allMedia.map((media, index) => (
               <img

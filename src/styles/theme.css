@@ -401,4 +401,20 @@
   label {
     cursor: pointer;
   }
+
+  /*
+    Страница пришпиливается через position: fixed на body, а не overflow: hidden
+    на html: иначе за открытым лайтбоксом теряется позиция прокрутки.
+  */
+  html.lightbox-locked {
+    overflow: hidden;
+  }
+
+  html.lightbox-locked body {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+  }
 }
