@@ -119,13 +119,21 @@ export function Header() {
 
         <div className="flex items-center gap-[12px] justify-self-end">
           {/* При открытом меню кнопка гаснет, чтобы не спорить с крестиком. */}
+          {/*
+            Фон на наведении не меняется и кнопка никуда не едет: правило
+            из hero-motion.css с #242424 и translateY перебито инлайновым
+            блоком в конце документа. Вместо этого по надписи проезжает
+            тёмная волна — текст обрезан по градиенту шириной 400%.
+          */}
           <a
             href={appUrl}
-            className={`inline-flex items-center justify-center rounded-[11px] bg-ink px-14 py-8 text-[calc(14*var(--u))] leading-[calc(20/14)] font-semibold tracking-[-0.5px] text-ink-contrast transition duration-[180ms] hover:-translate-y-px hover:bg-[#242424] md:rounded-[12px] md:px-[20px] md:py-[10px] md:text-[14px] md:leading-[20px] ${
+            className={`group inline-flex items-center justify-center rounded-[11px] bg-ink px-14 py-8 text-[calc(14*var(--u))] leading-[calc(20/14)] font-semibold tracking-[-0.5px] transition-[background-color,color,scale] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.975] md:rounded-[12px] md:px-[20px] md:py-[10px] md:text-[14px] md:leading-[20px] ${
               isMenuOpen ? 'invisible opacity-0 lg:visible lg:opacity-100' : ''
             }`}
           >
-            {ctaLabel}
+            <span className="bg-[image:var(--btn-sweep)] bg-[length:400%_100%] bg-[position:0%_50%] bg-clip-text text-transparent group-hover:animate-btn-sweep group-focus-visible:animate-btn-sweep motion-reduce:animate-none">
+              {ctaLabel}
+            </span>
           </a>
 
           <button

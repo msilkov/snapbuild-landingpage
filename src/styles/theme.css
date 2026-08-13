@@ -55,6 +55,13 @@
     rgb(255 255 255 / 0) 63%,
     rgb(255 255 255 / 0) 100%
   );
+
+  /*
+    Обратный блик для чёрной кнопки: текст у неё не залит белым, а обрезан
+    по градиенту с тёмной полосой посередине. В покое полоса уведена за край,
+    на наведении проезжает по надписи.
+  */
+  --btn-sweep: linear-gradient(90deg, #fff 0%, #fff 37%, #000 50%, #fff 63%, #fff 100%);
 }
 
 @theme {
@@ -137,6 +144,7 @@
   }
 
   --animate-btn-shine: btn-shine 750ms linear 1;
+  --animate-btn-sweep: btn-sweep 750ms linear 1;
 
   @keyframes btn-shine {
     from {
@@ -148,6 +156,41 @@
       background-position:
         0% 50%,
         0% 50%;
+    }
+  }
+
+  @keyframes btn-sweep {
+    from {
+      background-position: 100% 50%;
+    }
+    to {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Появление активного кадра при свайпе — по направлению жеста. */
+  --animate-slide-in-next: slide-in-next 260ms var(--ease-menu) both;
+  --animate-slide-in-prev: slide-in-prev 260ms var(--ease-menu) both;
+
+  @keyframes slide-in-next {
+    from {
+      opacity: 0;
+      transform: translateX(24%);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes slide-in-prev {
+    from {
+      opacity: 0;
+      transform: translateX(-24%);
+    }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 

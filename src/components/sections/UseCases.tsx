@@ -8,6 +8,17 @@ const POINT_DURATION = 8000
 const POINTS_PER_TAB = 4
 const TOTAL_POINTS = useCaseTabs.length * POINTS_PER_TAB
 const SWIPE_THRESHOLD = 40
+/** Чуть длиннее самого выезда, чтобы направление снялось после его конца. */
+const SWIPE_ANIM_DURATION = 280
+
+/*
+  Классы выезда записаны литералами, а не собираются из направления:
+  Tailwind ищет имена классов текстом по исходнику и склеенное имя не увидит.
+*/
+const swipeClass = {
+  next: 'max-md:animate-slide-in-next',
+  prev: 'max-md:animate-slide-in-prev',
+} as const
 
 const allMedia = useCaseTabs.flatMap((tab) => tab.items.map((item) => item.media))
 
@@ -25,8 +36,12 @@ const allMedia = useCaseTabs.flatMap((tab) => tab.items.map((item) => item.media
 export function UseCases() {
   const [tabIndex, setTabIndex] = useState(0)
   const [pointIndex, setPointIndex] = useState(0)
+  const [swipe, setSwipe] = useState<'next' | 'prev' | null>(null)
   const fillsRef = useRef<(HTMLSpanElement | null)[]>([])
   const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const swipeTimer = useRef<number>(0)
+
+  useEffect(() => () => window.clearTimeout(swipeTimer.current), [])
 
   const goToFlat = (flat: number) => {
     const next = ((flat % TOTAL_POINTS) + TOTAL_POINTS) % TOTAL_POINTS
@@ -80,6 +95,12 @@ export function UseCases() {
     const dx = event.changedTouches[0].clientX - start.x
     const dy = event.changedTouches[0].clientY - start.y
     if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return
+
+    // Направление держим только на время выезда: дальше кадры снова просто
+    // проявляются, иначе автопереключение уезжало бы вбок само по себе.
+    setSwipe(dx < 0 ? 'next' : 'prev')
+    window.clearTimeout(swipeTimer.current)
+    swipeTimer.current = window.setTimeout(() => setSwipe(null), SWIPE_ANIM_DURATION)
 
     goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + (dx < 0 ? 1 : -1))
   }
@@ -188,7 +209,9 @@ export function UseCases() {
                 alt=""
                 loading={index === 0 ? 'eager' : 'lazy'}
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-                  media === activeMedia ? 'opacity-100' : 'opacity-0'
+                  media === activeMedia
+                    ? `opacity-100 ${swipe ? `${swipeClass[swipe]} motion-reduce:animate-none` : ''}`
+                    : 'opacity-0'
                 }`}
               />
             ))}

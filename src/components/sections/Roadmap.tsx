@@ -10,6 +10,9 @@ const brandGradient =
  * Общая линия и закрашенный отрезок пройденного нарисованы псевдоэлементами
  * дорожки, поэтому длина прогресса считается в колонках, а не в пикселях.
  * Ленту можно тянуть мышью, как карту.
+ *
+ * Закрашенный отрезок у оригинала длиннее ровно на четыре пикселя макета,
+ * но только на мобильном и от 1440 — в промежутке слагаемого нет.
  */
 export function Roadmap() {
   const scrollerRef = useRef<HTMLDivElement>(null)
@@ -34,7 +37,7 @@ export function Roadmap() {
   return (
     <section
       id="roadmap"
-      className="flex flex-col gap-32 overflow-hidden bg-canvas pt-32 pb-42 [--rmap-col:calc(260*var(--u))] [--rmap-pad:calc(16*var(--u))] md:gap-56 md:pb-60 md:[--rmap-col:calc(320*var(--u))] md:[--rmap-pad:calc(20*var(--u))] lg:pb-96 lg:[--rmap-pad:calc(40*var(--u))]"
+      className="flex flex-col gap-32 overflow-hidden bg-canvas pt-32 pb-42 [--rmap-col:calc(260*var(--u))] [--rmap-extra:calc(4*var(--u))] [--rmap-pad:calc(16*var(--u))] md:gap-56 md:pb-60 md:[--rmap-col:calc(320*var(--u))] md:[--rmap-extra:0px] md:[--rmap-pad:calc(20*var(--u))] lg:pb-96 lg:[--rmap-pad:calc(40*var(--u))] min-[1440px]:[--rmap-extra:calc(4*var(--u))]"
     >
       <header className="flex flex-col gap-8 px-[var(--rmap-pad)]">
         <h2 className="text-u-32 leading-[1.25] font-medium tracking-[calc(-1*var(--u))] md:text-u-52 md:leading-[1.2308]">
@@ -55,7 +58,7 @@ export function Roadmap() {
       >
         <div
           style={{ '--rmap-progress': roadmap.progress } as CSSProperties}
-          className="relative grid w-max auto-cols-[var(--rmap-col)] grid-flow-col px-[var(--rmap-pad)] pb-24 before:absolute before:top-16 before:right-[var(--rmap-pad)] before:left-[var(--rmap-pad)] before:h-px before:bg-black/50 before:content-[''] after:absolute after:top-16 after:left-[var(--rmap-pad)] after:h-px after:w-[calc(var(--rmap-progress)*var(--rmap-col))] after:bg-[#ff68a4] after:content-[''] md:pb-0"
+          className="relative grid w-max auto-cols-[var(--rmap-col)] grid-flow-col px-[var(--rmap-pad)] pb-24 before:absolute before:top-16 before:right-[var(--rmap-pad)] before:left-[var(--rmap-pad)] before:h-px before:bg-black/50 before:content-[''] after:absolute after:top-16 after:left-[var(--rmap-pad)] after:h-px after:w-[calc(var(--rmap-progress)*var(--rmap-col)_+_var(--rmap-extra))] after:bg-[#ff68a4] after:content-[''] md:pb-0"
         >
           {roadmap.items.map((item, index) => {
             const isReached = index < roadmap.reachedCount
