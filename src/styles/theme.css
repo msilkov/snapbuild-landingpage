@@ -87,6 +87,14 @@
   --color-ink-contrast: #ffffff;
   --color-glass: rgb(0 0 0 / 0.03);
 
+  /*
+    Единственный цвет, добавленный к палитре оригинала: ошибка в форме заявки.
+    Монохромом её не показать — снятое поле и заполненное выглядели бы одинаково.
+    Оттенок взят с тёплого края фирменного градиента (#ff6d3c → #ff6ba7),
+    чтобы читаться как ошибка, но не как чужой системный красный.
+  */
+  --color-error: #d1365b;
+
   /* Радиусы исходной системы: 4 / 8 / 12 / 16 / 24 px */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
@@ -107,10 +115,17 @@
     попадании в экран; ниже 1024px строка едет бесконечной лентой, поэтому
     содержимое дублируется и сдвигается ровно на половину дорожки с зазором.
   */
-  --animate-logo-reveal: logo-reveal 520ms var(--ease-motion) both;
+  --animate-logo-reveal: reveal-up 520ms var(--ease-motion) both;
   --animate-marquee: marquee 12.1s linear infinite;
 
-  @keyframes logo-reveal {
+  /*
+    Тот же выход снизу, но для новых секций: шаги внедрения, карточки тарифов
+    и смена цитаты в слайдере. Один keyframe на всё, чтобы движение по странице
+    читалось как одно, а не как набор разных эффектов.
+  */
+  --animate-reveal-up: reveal-up 520ms var(--ease-motion) both;
+
+  @keyframes reveal-up {
     from {
       opacity: 0;
       transform: translateY(12px);
@@ -200,6 +215,109 @@
 */
 @utility text-u-* {
   font-size: calc(--value(integer) * var(--u));
+}
+
+/*
+  Рамка градиентом: border градиент не принимает, поэтому элемент заливается
+  фирменной растяжкой, а середина вырезается маской из двух слоёв — по
+  content-box и по border-box, — и толщиной рамки становится padding.
+  Тот же приём обводит колонку продукта в таблице сравнения; там он расписан
+  свойствами по месту, потому что порядок деклараций в шорткоде mask сбрасывал
+  mask-composite обратно в add.
+*/
+@utility gradient-frame {
+  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  -webkit-mask-origin: content-box, border-box;
+  mask-origin: content-box, border-box;
+  -webkit-mask-clip: content-box, border-box;
+  mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/*
+  Таблица сравнения ниже 768px.
+
+  На узком экране оригинал не просто прокручивает таблицу: колонка подписей и
+  колонка продукта остаются на месте, а остальные уезжают под них. Отсюда всё
+  остальное — прокрутка требует у таблицы overflow: visible, липкие ячейки
+  требуют непрозрачного фона и своего слоя, а разделители переводятся с альфы
+  на плотный #f0f0f0, иначе сквозь них просвечивают уезжающие ячейки.
+
+  Градиент вокруг колонки продукта здесь нельзя нарисовать маской, как на
+  десктопе: маска живёт на одном абсолютном элементе, а липкой должна быть
+  каждая ячейка. Поэтому рамка собрана из прозрачного border и двух фонов,
+  а чтобы растяжка не начиналась заново в каждой строке, она рисуется один раз
+  на всю высоту колонки и сдвигается на свою строку через --brand-slice.
+*/
+@media (width < 48rem) {
+  /*
+    Позиция и сдвиг живут здесь, а не утилитами в разметке: утилиты работают
+    на всех ширинах, и на десктопе left уводил колонку продукта вправо
+    из-под её рамки.
+  */
+  .compare-sticky {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background-color: var(--color-surface);
+    background-clip: padding-box;
+    isolation: isolate;
+  }
+
+  .compare-sticky--head {
+    z-index: 4;
+  }
+
+  .compare-brand {
+    left: calc(90 * var(--u));
+    border-inline: calc(2 * var(--u)) solid transparent;
+    background-image:
+      linear-gradient(#fff, #fff),
+      linear-gradient(180deg, #ff6d3d 0%, #ff6ca7 52%, #bb6dff 100%);
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    background-repeat: no-repeat, no-repeat;
+    /* Высота колонки: 60 шапки + 4 × 72 строки. */
+    background-size:
+      100% 100%,
+      100% calc(348 * var(--u));
+    background-position:
+      0 0,
+      0 calc(var(--brand-slice, 0) * var(--u));
+  }
+
+  .compare-brand--head {
+    border-top: calc(2 * var(--u)) solid transparent;
+    border-bottom: none;
+    border-radius: calc(20 * var(--u)) calc(20 * var(--u)) 0 0;
+  }
+
+  /* Нижняя граница шапки идёт поверх рамки, поэтому она не border, а слой. */
+  .compare-brand--head::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    height: 1px;
+    background: #f0f0f0;
+  }
+
+  .compare-brand--last {
+    border-bottom: calc(2 * var(--u)) solid transparent;
+    border-radius: 0 0 calc(20 * var(--u)) calc(20 * var(--u));
+  }
+
+  .compare-divider-x {
+    border-right-color: #f0f0f0;
+  }
+
+  .compare-divider-y {
+    border-bottom-color: #f0f0f0;
+  }
 }
 
 @layer base {
