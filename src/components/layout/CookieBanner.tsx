@@ -3,10 +3,6 @@ import { useEffect, useState } from 'react'
 const STORAGE_KEY = 'dds-cookie-consent'
 const linkClass = 'font-semibold underline underline-offset-2 hover:opacity-70'
 
-/**
- * Баннер о cookie. Согласие лежит в localStorage; если он недоступен
- * (приватный режим, отключённое хранилище), баннер просто показывается заново.
- */
 export function CookieBanner() {
   const [isMounted, setIsMounted] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
@@ -15,10 +11,9 @@ export function CookieBanner() {
     try {
       if (localStorage.getItem(STORAGE_KEY) === 'accepted') return
     } catch {
-      // Хранилище недоступно — показываем баннер.
     }
     setIsMounted(true)
-    // Второй кадр нужен, чтобы переход отработал от исходного состояния.
+
     const frame = requestAnimationFrame(() => setIsVisible(true))
     return () => cancelAnimationFrame(frame)
   }, [])
@@ -29,7 +24,6 @@ export function CookieBanner() {
     try {
       localStorage.setItem(STORAGE_KEY, 'accepted')
     } catch {
-      // Не смогли запомнить — баннер вернётся при следующем заходе.
     }
     setIsVisible(false)
     setTimeout(() => setIsMounted(false), 300)

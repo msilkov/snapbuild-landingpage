@@ -2,19 +2,11 @@ import { useState } from 'react'
 import { faq } from '../../content/faq'
 import { asset } from '../../lib/asset'
 
-/*
-  Выше 1024px список — не сетка, а две независимые колонки. Разница видна
-  при раскрытии: в сетке общая строка тянется по высокому соседу и толкает
-  вторую колонку вниз, у оригинала колонки друг о друге не знают.
-*/
+// Выше 1024px две независимые колонки, а не сетка: в сетке общая строка
+// тянется по высокому соседу и раскрытие слева толкает правую колонку.
 const half = Math.ceil(faq.items.length / 2)
 const columns = [faq.items.slice(0, half), faq.items.slice(half)]
 
-/**
- * Аккордеон вопросов. В оригинале это чекбоксы, поэтому открытых пунктов
- * может быть сколько угодно — поведение сохранено. Ответ раскрывается
- * высотой грид-строки: анимировать height: auto нельзя.
- */
 export function Faq() {
   const [openIds, setOpenIds] = useState<string[]>([])
 
@@ -52,10 +44,6 @@ export function Faq() {
                   key={question}
                   className="relative flex flex-col rounded-[20px] bg-[#fafafa] p-16 md:p-20"
                 >
-                  {/*
-                    Псевдоэлемент растягивает кнопку на всю карточку: у оригинала
-                    нажимается любая её точка, а не только строка с вопросом.
-                  */}
                   <button
                     type="button"
                     aria-expanded={isOpen}

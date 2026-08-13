@@ -44,8 +44,6 @@ export function Lightbox({ shot, onClose }: { shot: Shot | null; onClose: () => 
     document.documentElement.classList.remove('lightbox-locked')
     document.body.style.top = ''
 
-    // Возврат к сохранённой позиции только мгновенный: на html висит
-    // scroll-behavior: smooth, иначе страница едет вниз уже после закрытия.
     document.documentElement.style.scrollBehavior = 'auto'
     window.scrollTo(0, savedScrollY.current)
     document.documentElement.style.scrollBehavior = ''
@@ -94,8 +92,6 @@ export function Lightbox({ shot, onClose }: { shot: Shot | null; onClose: () => 
         visible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* margin: auto, а не justify-center: у растянутой картинки иначе
-          обрезается левый край и до него не доскроллить. */}
       <div ref={scrollRef} className="absolute inset-0 flex overflow-auto overscroll-contain">
         <img
           src={current.src}

@@ -21,11 +21,6 @@ import type { Shot } from './components/ui/Lightbox'
 import { Lightbox } from './components/ui/Lightbox'
 
 export default function App() {
-  /*
-    Единственное состояние на уровне страницы: кнопка в тарифах уводит к форме
-    и подставляет туда выбранный формат подключения. Между секциями стоят
-    отзывы, поэтому связать их напрямую нельзя.
-  */
   const [requestedPlan, setRequestedPlan] = useState('unset')
   const [shot, setShot] = useState<Shot | null>(null)
 

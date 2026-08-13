@@ -5,11 +5,6 @@ import { isPhone } from '../../lib/isPhone'
 
 const shot = asset('hero-snapbuild-2026-08-07-v2.webp')
 
-/**
- * Первый экран: карточка с диагональным градиентом, по центру заголовок,
- * подзаголовок и белая кнопка с градиентным текстом, снизу скриншот продукта,
- * подрезанный нижней кромкой карточки. На мобильном карточка идёт в край экрана.
- */
 export function Hero({ onOpenShot }: { onOpenShot: (shot: Shot) => void }) {
   return (
     <section id="hero" className="bg-canvas md:p-[12px]">
@@ -29,8 +24,6 @@ export function Hero({ onOpenShot }: { onOpenShot: (shot: Shot) => void }) {
               href={appUrl}
               className="text-u-13 group inline-flex animate-hero-cta items-center justify-center rounded-[12px] bg-white px-14 py-10 leading-[calc(20/14)] font-semibold transition-[background-color,scale] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:animate-none active:scale-[0.975] md:px-22 md:py-14 md:text-u-14"
             >
-              {/* Единственное цветное пятно в типографике: под градиентом
-                  спрятан белый блик, он проезжает по тексту при наведении. */}
               <span className="bg-[image:var(--btn-shine),var(--brand-gradient)] bg-[length:400%_100%,100%_100%] bg-[position:100%_50%,0%_50%] bg-no-repeat bg-clip-text text-transparent group-hover:animate-btn-shine group-focus-visible:animate-btn-shine motion-reduce:animate-none">
                 {ctaLabel}
               </span>

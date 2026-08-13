@@ -5,7 +5,6 @@ import { roles } from '../../content/roles'
 const PANEL_ID = 'roles-panel'
 const tabId = (index: number) => `roles-tab-${index}`
 
-/** Сдвиг клавишами внутри группы: стрелки по кругу, Home и End по краям. */
 const keyToOffset: Record<string, number | 'first' | 'last'> = {
   ArrowRight: 1,
   ArrowDown: 1,
@@ -15,14 +14,6 @@ const keyToOffset: Record<string, number | 'first' | 'last'> = {
   End: 'last',
 }
 
-/**
- * «Снэпбилд закрывает задачи всей команды»: один сценарий на роль.
- *
- * От вкладок «Возможностей» секция отличается намеренно: там свободные чипы
- * и галерея кадров, здесь — сегментированный переключатель с едущей пилюлей
- * и разворот сценария на белой карточке. Стрелками группа листается по кругу,
- * в табуляции она занимает один шаг, как и положено вкладкам.
- */
 export function Roles() {
   const [active, setActive] = useState(0)
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
@@ -66,10 +57,6 @@ export function Roles() {
           onKeyDown={onKeyDown}
           className="relative grid grid-cols-4 rounded-[14px] bg-[#f5f5f7] p-[3px] md:rounded-[16px] md:p-[4px] lg:w-560"
         >
-          {/*
-            Пилюля едет трансформом, а не сменой left: ширина ячейки задана
-            один раз, поэтому переезд не пересчитывает раскладку.
-          */}
           <span
             aria-hidden
             style={{ '--seg': active } as CSSProperties}
@@ -104,11 +91,6 @@ export function Roles() {
           aria-labelledby={tabId(active)}
           className="rounded-[20px] bg-surface p-16 md:p-24 lg:flex lg:min-h-296 lg:flex-col lg:p-32"
         >
-          {/*
-            Смена роли перезапускает появление: контент меняется целиком.
-            Минимальная высота держит карточку от прыжков между ролями —
-            текста в сценариях разное количество.
-          */}
           <div
             key={item.label}
             className="grid animate-reveal-up gap-24 motion-reduce:animate-none md:gap-32 lg:flex-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] lg:gap-40"

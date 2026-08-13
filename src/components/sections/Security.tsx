@@ -1,10 +1,6 @@
 import { security } from '../../content/security'
 import { asset } from '../../lib/asset'
 
-/**
- * «Безопасность без компромиссов»: три пункта одинаковой структуры — кадр,
- * заголовок, пояснение. До 1024px карточки идут в одну колонку.
- */
 export function Security() {
   return (
     <section
@@ -18,11 +14,6 @@ export function Security() {
       <div className="grid grid-cols-1 gap-[40px] md:gap-[16px] lg:grid-cols-3 lg:gap-32">
         {security.points.map((point) => (
           <article key={point.image} className="flex flex-col items-stretch gap-12 md:gap-20">
-            {/*
-              Кадр на мобильном — не квадрат: у оригинала это полоса высотой
-              171.5 пикселя макета со скруглением 6px. Квадратным он становится
-              только на планшете.
-            */}
             <picture className="block h-[calc(171.5*var(--u))] w-full overflow-hidden rounded-[6px] md:aspect-square md:h-auto md:rounded-[calc(12*var(--u))] lg:aspect-auto lg:h-432 lg:rounded-[20px]">
               <source media="(max-width: 767px)" srcSet={asset(point.imageMobile)} />
               <img
@@ -33,11 +24,6 @@ export function Security() {
             </picture>
 
             <div className="flex flex-col items-start gap-[4px] md:h-[100px]">
-              {/*
-                Кегль подписи задан не в основном слое, а правилами с !important
-                в overrides.css — они перебивают и базовый слой, и инлайновый
-                блок в конце документа: 16/22 на мобильном, 20/28 на планшете.
-              */}
               <h3 className="text-u-16 leading-[calc(22*var(--u))] font-medium tracking-normal md:text-u-20 md:leading-[calc(28*var(--u))] md:tracking-[calc(-0.5*var(--u))] lg:text-u-24 lg:leading-[1.3334] lg:tracking-[calc(-1*var(--u))]">
                 {point.title}
               </h3>

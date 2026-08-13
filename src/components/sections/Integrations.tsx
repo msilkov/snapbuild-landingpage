@@ -2,14 +2,6 @@ import { integrations } from '../../content/integrations'
 import { useInView } from '../../lib/useInView'
 import { ToolMark } from '../ui/ToolMark'
 
-/**
- * «Встраивается в ваш процесс»: четыре шага внедрения и строка систем,
- * куда уходит результат.
- *
- * Карточки шагов выходят лесенкой — тем же движением, что логотипы в шапке
- * страницы. Полоска над каждой карточкой закрашена на свою четверть: вместе
- * они читаются как шкала внедрения, а не как четыре одинаковых плитки.
- */
 export function Integrations() {
   const [stepsRef, areStepsInView] = useInView<HTMLOListElement>(0.15)
 

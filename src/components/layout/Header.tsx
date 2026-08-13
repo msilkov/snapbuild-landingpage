@@ -4,12 +4,6 @@ import { asset } from '../../lib/asset'
 
 const homeHref = import.meta.env.BASE_URL
 
-/**
- * Хедер оригинала — не полоса во всю ширину, а плавающая пилюля поверх
- * контента: fixed-контейнер не ловит клики, кликабельна только сама панель.
- * При скролле дальше 12px у панели появляются граница и тень.
- * Ниже 1024px навигация уезжает в полноэкранное меню.
- */
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -23,8 +17,6 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Открытое меню перекрывает страницу целиком, поэтому фон не прокручивается,
-  // а фокус и Escape остаются внутри панели.
   useEffect(() => {
     if (!isMenuOpen) return
 
@@ -62,7 +54,6 @@ export function Header() {
       }
     }
 
-    // На десктопе меню не существует: если окно расширили, состояние сбрасываем.
     const desktop = window.matchMedia('(width >= 64rem)')
     const onBreakpointChange = () => {
       if (desktop.matches) setIsMenuOpen(false)
@@ -88,11 +79,6 @@ export function Header() {
         }`}
       >
         <a href={homeHref} aria-label="Снэпбилд" className="inline-flex justify-self-start">
-          {/*
-            Ширина в пикселях макета, а не фиксированная высота: у оригинала
-            лого задано как 111 макетных пикселей на мобильном и 153 дальше,
-            поэтому ниже 375 оно сжимается вместе со всем остальным.
-          */}
           <img
             src={asset('logo-snapbuild.svg')}
             alt="Снэпбилд"
@@ -118,13 +104,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-[12px] justify-self-end">
-          {/* При открытом меню кнопка гаснет, чтобы не спорить с крестиком. */}
-          {/*
-            Фон на наведении не меняется и кнопка никуда не едет: правило
-            из hero-motion.css с #242424 и translateY перебито инлайновым
-            блоком в конце документа. Вместо этого по надписи проезжает
-            тёмная волна — текст обрезан по градиенту шириной 400%.
-          */}
           <a
             href={appUrl}
             className={`group inline-flex items-center justify-center rounded-[11px] bg-ink px-14 py-8 text-[calc(14*var(--u))] leading-[calc(20/14)] font-semibold tracking-[-0.5px] transition-[background-color,color,scale] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.975] md:rounded-[12px] md:px-[20px] md:py-[10px] md:text-[14px] md:leading-[20px] ${
@@ -165,11 +144,8 @@ export function Header() {
         </div>
       </div>
 
-      {/*
-        Меню всегда в разметке и переключается display, как в оригинале:
-        переход none → flex заново проигрывает анимации появления, а через
-        монтирование компонента этого не добиться.
-      */}
+      {/* Меню всегда в разметке и переключается display: переход none → flex
+          заново проигрывает анимации появления, монтированием этого не добиться. */}
       <nav
         ref={menuRef}
         id="main-menu"

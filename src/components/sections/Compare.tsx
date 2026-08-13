@@ -6,22 +6,15 @@ import { asset } from '../../lib/asset'
 const cellClass =
   'text-u-12 flex items-center justify-center gap-4 px-14 text-center leading-[calc(14/12)] font-medium whitespace-pre-line md:text-u-14 md:leading-[calc(20/14)] lg:px-32'
 
-/** Вертикальные разделители стоят только между тремя средними колонками. */
 const dividerFor = (index: number) =>
   index >= 1 && index <= 3 ? 'compare-divider-x border-r border-black/[0.06]' : ''
 
-/*
-  Колонка подписей и колонка продукта — липкие. Ни position, ни left сюда
-  утилитами не добавлять: они действовали бы на всех ширинах, а липкость
-  нужна только ниже 768px. Всё, включая сдвиг второй колонки, — в theme.css.
-*/
+// Липкость нужна только ниже 768: position и left живут в theme.css,
+// утилитами они действовали бы на всех ширинах.
 const stickyLabel = 'compare-sticky'
 const stickyBrand = 'compare-sticky compare-brand'
 
-/**
- * Сдвиг градиентной рамки для строки: шапка 60 пикселей макета, дальше
- * строки по 72. Считается один раз, а не на каждый рендер.
- */
+// Сдвиг градиентной рамки на свою строку: шапка 60 пикселей макета, дальше по 72.
 const brandSlice = (rowIndex: number) =>
   ({ '--brand-slice': rowIndex === 0 ? 0 : -(60 + (rowIndex - 1) * 72) }) as CSSProperties
 
@@ -36,15 +29,6 @@ function CellContent({ cell }: { cell: CompareCell }) {
   )
 }
 
-/**
- * «Почему команды выбирают Снэпбилд». Таблица собрана гридом, а строки —
- * display:contents, поэтому колонки выравниваются сквозь всю таблицу.
- *
- * Выше 768px колонку продукта обводит градиентная рамка, нарисованная маской
- * поверх таблицы. Ниже таблица прокручивается по горизонтали, и рамка
- * переезжает на сами ячейки: маска на одном абсолютном элементе не может быть
- * липкой вместе с колонкой. Детали — в блоке .compare-brand в theme.css.
- */
 export function Compare() {
   return (
     <section
@@ -60,23 +44,16 @@ export function Compare() {
         </p>
       </header>
 
-      {/* Ниже 768px полоса прокрутки идёт от края до края, без полей секции. */}
       <div className="isolate overflow-x-auto bg-surface [-webkit-overflow-scrolling:touch] [scrollbar-width:none] md:bg-transparent [&::-webkit-scrollbar]:hidden">
         <div
           role="table"
           className="relative grid w-690 grid-cols-[calc(90*var(--u))_calc(100*var(--u))_repeat(3,calc(120*var(--u)))_calc(140*var(--u))] grid-rows-[minmax(calc(60*var(--u)),auto)_repeat(4,minmax(calc(72*var(--u)),auto))] bg-surface md:w-auto md:auto-rows-[calc(100*var(--u))] md:grid-cols-6 md:grid-rows-none md:overflow-hidden md:rounded-[calc(20*var(--u))]"
         >
-          {/*
-            Рамка вокруг колонки продукта: градиент, из которого маской
-            вырезана середина. Обычным border градиент не задать. Ниже 768px
-            её заменяют фоны на самих ячейках, поэтому здесь она снята.
-          */}
+          {/* Маска стилем, а не утилитами: в шорткоде mask важен порядок
+              деклараций и mask-composite сбрасывался обратно в add. */}
           <div
             aria-hidden
             style={{
-              // Маска задана стилем, а не утилитами: в шорткоде mask важен
-              // порядок деклараций, и mask-composite сбрасывался обратно в add,
-              // из-за чего вместо рамки получалась сплошная градиентная заливка.
               WebkitMaskImage: 'linear-gradient(#fff 0 0), linear-gradient(#fff 0 0)',
               maskImage: 'linear-gradient(#fff 0 0), linear-gradient(#fff 0 0)',
               WebkitMaskOrigin: 'content-box, border-box',
@@ -94,7 +71,6 @@ export function Compare() {
               className={`${cellClass} ${stickyLabel} compare-sticky--head compare-divider-y text-u-14 items-start justify-start border-b border-black/[0.06] text-left font-semibold text-ink-subtle md:text-u-16`}
               role="columnheader"
             >
-              {/* Ниже 768px подпись колонки скрыта, но своё место сохраняет. */}
               <span className="invisible self-center md:visible">{compare.head[0]}</span>
             </div>
             {compare.head.slice(1).map((title, index) => (

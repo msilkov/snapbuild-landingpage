@@ -1,18 +1,8 @@
-/**
- * Секция «Интеграции и внедрение»: четыре шага подключения и ряд систем,
- * с которыми платформа обменивается результатом.
- *
- * Состав систем взят из ответов FAQ про экспорт — React, Vue, Angular,
- * GitHub, GitLab и конвейеры сборки, — плюс Figma как источник дизайн-системы.
- * Сроков у шагов нет намеренно: в открытых материалах платформы их не заявлено.
- */
-
 export type IntegrationStep = {
   title: string
   desc: string
 }
 
-/** id совпадает с ключом векторного знака в components/ui/ToolMark.tsx. */
 export type Tool = {
   id: 'figma' | 'github' | 'gitlab' | 'react' | 'vue' | 'angular'
   name: string

@@ -1,5 +1,3 @@
-/** Секция «Возможности»: пять вкладок, в каждой четыре пункта со своим кадром. */
-
 export type UseCaseItem = {
   title: string
   desc: string

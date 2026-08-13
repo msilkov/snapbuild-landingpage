@@ -25,13 +25,6 @@ function Chevron({ back = false }: { back?: boolean }) {
   )
 }
 
-/**
- * «Что говорят команды»: слайдер обезличенных цитат.
- *
- * Дорожка едет трансформом, а слайды лежат в одну строку и растягиваются до
- * общей высоты — поэтому при переключении карточка не прыгает под самой
- * длинной цитатой. Листается кнопками, точками, стрелками и свайпом.
- */
 export function Testimonials() {
   const [index, setIndex] = useState(0)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
@@ -76,10 +69,6 @@ export function Testimonials() {
       </header>
 
       <div className="flex flex-col gap-16 md:gap-20">
-        {/*
-          Объявляем только номер слайда: если повесить aria-live на дорожку,
-          скринридер зачитает все пять цитат разом.
-        */}
         <p aria-live="polite" className="sr-only">
           {`Отзыв ${index + 1} из ${testimonials.items.length}`}
         </p>
@@ -109,7 +98,6 @@ export function Testimonials() {
                   {`«${item.quote}»`}
                 </blockquote>
 
-                {/* Подпись собрана в столбец: разбрасывать её по краям карточки не даём. */}
                 <figcaption className="mt-auto flex flex-col items-start gap-12 pt-24 md:gap-16 md:pt-40">
                   <div className="flex flex-col gap-2">
                     <span className="text-u-14 leading-[1.4286] font-semibold md:text-u-16 md:leading-[1.5]">

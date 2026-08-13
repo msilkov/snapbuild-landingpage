@@ -1,14 +1,10 @@
-/** Тексты и ссылки общих элементов страницы. Разметка их не хранит. */
-
 export type NavLink = {
   label: string
   href: string
 }
 
-/** Приложение, куда ведут все кнопки «Начать сейчас». */
 export const appUrl = 'https://builder.snapbuild.ru/'
 
-/** «Тарифы» — пункт новой секции, у оригинала в шапке его нет. */
 export const navLinks: NavLink[] = [
   { label: 'Продукт', href: '#process' },
   { label: 'Возможности', href: '#use-cases' },
@@ -17,7 +13,6 @@ export const navLinks: NavLink[] = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-/** В мобильном меню оригинала «Возможности» стоят первыми. */
 export const mobileNavLinks: NavLink[] = [
   navLinks[1],
   navLinks[0],

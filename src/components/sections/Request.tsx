@@ -3,7 +3,6 @@ import type { FormEvent } from 'react'
 import { request } from '../../content/request'
 
 type RequestProps = {
-  /** Тариф, выбранный кнопкой в секции «Тарифы». */
   plan: string
   onPlanChange: (planId: string) => void
 }
@@ -20,10 +19,6 @@ type FieldName = 'name' | 'email' | 'company' | 'consent'
 
 const emptyValues: Values = { name: '', email: '', company: '', task: '', consent: false }
 
-/*
-  Проверка адреса намеренно грубая: точную решает почтовый сервер, а строгая
-  регулярка отсекает живые адреса — здесь достаточно поймать опечатку.
-*/
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 const validate = (values: Values) => {
@@ -59,15 +54,6 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   )
 }
 
-/**
- * Форма заявки. Бэкенда по условию задачи нет, поэтому отправка имитируется
- * задержкой, а в подтверждении об этом сказано прямо.
- *
- * Ошибки показываются только после первой попытки отправки: подчёркивать
- * незаполненное поле, пока человек до него не дошёл, — раздражает. После
- * первой попытки форма переходит в режим проверки на каждое изменение,
- * чтобы исправление сразу гасило ошибку.
- */
 export function Request({ plan, onPlanChange }: RequestProps) {
   const [values, setValues] = useState<Values>(emptyValues)
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({})
@@ -94,7 +80,6 @@ export function Request({ plan, onPlanChange }: RequestProps) {
     setErrors(found)
 
     if (Object.keys(found).length > 0) {
-      // Курсор уводим к первому незаполненному полю, а не к началу формы.
       const firstInvalid = Object.keys(found)[0]
       formRef.current?.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus()
       return
@@ -248,11 +233,7 @@ export function Request({ plan, onPlanChange }: RequestProps) {
                 <label htmlFor="request-plan" className={labelClass}>
                   {request.fields.plan.label}
                 </label>
-                {/*
-                  Нативную стрелку селекта не покрасить, поэтому она снята
-                  appearance-none и нарисована своей: та же галка, что у кнопок
-                  слайдера, только повёрнутая вниз.
-                */}
+
                 <div className="relative">
                   <select
                     id="request-plan"
@@ -305,11 +286,6 @@ export function Request({ plan, onPlanChange }: RequestProps) {
             </div>
 
             <div className="flex flex-col gap-6">
-              {/*
-                Ссылка на политику стоит вне <label>: внутри него клик по ссылке
-                заодно переключал бы галочку. Поэтому подпись разрезана на два
-                узла, а сам квадратик — это второй label того же поля.
-              */}
               <div className="flex items-start gap-10">
                 <input
                   id="request-consent"
@@ -349,6 +325,8 @@ export function Request({ plan, onPlanChange }: RequestProps) {
                   </svg>
                 </label>
 
+                {/* Ссылка вне <label>: внутри него клик по ней заодно переключал бы
+                    галочку, поэтому подпись разрезана на два узла. */}
                 <span className="text-u-13 leading-[1.3847] font-medium text-ink-muted md:text-u-14 md:leading-[1.4286]">
                   <label htmlFor="request-consent" className="cursor-pointer">
                     {request.consent.text} в соответствии с

@@ -2,19 +2,9 @@ import { Fragment } from 'react'
 import { process } from '../../content/process'
 import { asset } from '../../lib/asset'
 
-/*
-  На мобильном кадр — полоса 2:1 со скруглением 6px, а не высокий прямоугольник:
-  правила в overrides.css идут с !important и перебивают инлайновый блок,
-  который ставит 16px. Квадратным кадр становится только на планшете.
-*/
 const mediaClass =
   'block aspect-[2/1] w-full rounded-[6px] object-cover md:aspect-square md:rounded-[calc(12*var(--u))] lg:aspect-auto lg:h-432 lg:rounded-[20px]'
 
-/**
- * «Одна платформа — весь маркетинг»: три карточки без подложки, картинка
- * со скруглением и подпись под ней. На планшете картинки становятся
- * квадратными, на мобильном карточки идут в одну колонку.
- */
 export function Process() {
   return (
     <section
