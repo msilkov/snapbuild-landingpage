@@ -8,10 +8,12 @@ export type NavLink = {
 /** Приложение, куда ведут все кнопки «Начать сейчас». */
 export const appUrl = 'https://builder.snapbuild.ru/'
 
+/** «Тарифы» — пункт новой секции, у оригинала в шапке его нет. */
 export const navLinks: NavLink[] = [
   { label: 'Продукт', href: '#process' },
   { label: 'Возможности', href: '#use-cases' },
   { label: 'Безопасность', href: '#features' },
+  { label: 'Тарифы', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
 ]
 
@@ -21,6 +23,7 @@ export const mobileNavLinks: NavLink[] = [
   navLinks[0],
   navLinks[2],
   navLinks[3],
+  navLinks[4],
 ]
 
 export const ctaLabel = 'Начать сейчас'
@@ -44,6 +47,8 @@ export const footer = {
         { label: 'Преимущества', href: '#compare' },
         { label: 'Безопасность', href: '#features' },
         { label: 'Роадмап', href: '#roadmap' },
+        { label: 'Тарифы', href: '#pricing' },
+        { label: 'Отзывы', href: '#testimonials' },
         { label: 'Частые вопросы', href: '#faq' },
       ],
     },
@@ -57,6 +62,7 @@ export const footer = {
     {
       title: 'Контакты',
       links: [
+        { label: 'Оставить заявку', href: '#request' },
         { label: 'Запросить демо', href: 'https://t.me/ochen_darya' },
         { label: 'Telegram', href: 'https://t.me/snapbuild' },
       ],
