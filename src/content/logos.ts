@@ -12,7 +12,7 @@ export type Logo = {
   widthMobile?: number
 }
 
-export const logosEyebrow = 'С платформой работают команды, для которых бренд — закон'
+export const logosEyebrow = 'С платформой работают команды, для которых бренд — закон'
 
 export const logos: Logo[] = [
   // Два логотипа в оригинале без названия и без alt — опознать бренд нельзя,

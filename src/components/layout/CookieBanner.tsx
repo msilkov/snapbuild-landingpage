@@ -55,14 +55,14 @@ export function CookieBanner() {
         >
           политику конфиденциальности
         </a>{' '}
-        и{' '}
+        и{' '}
         <a
           href="https://snapbuild.ru/agreement"
           target="_blank"
           rel="noopener noreferrer"
           className={linkClass}
         >
-          соглашение на обработку персональных данных
+          соглашение на обработку персональных данных
         </a>
         .
       </p>
