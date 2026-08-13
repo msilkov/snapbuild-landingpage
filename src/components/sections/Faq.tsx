@@ -2,6 +2,14 @@ import { useState } from 'react'
 import { faq } from '../../content/faq'
 import { asset } from '../../lib/asset'
 
+/*
+  Выше 1024px список — не сетка, а две независимые колонки. Разница видна
+  при раскрытии: в сетке общая строка тянется по высокому соседу и толкает
+  вторую колонку вниз, у оригинала колонки друг о друге не знают.
+*/
+const half = Math.ceil(faq.items.length / 2)
+const columns = [faq.items.slice(0, half), faq.items.slice(half)]
+
 /**
  * Аккордеон вопросов. В оригинале это чекбоксы, поэтому открытых пунктов
  * может быть сколько угодно — поведение сохранено. Ответ раскрывается
@@ -29,52 +37,63 @@ export function Faq() {
         </p>
       </header>
 
-      <div className="grid gap-y-16 md:gap-y-20 lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-4 lg:gap-x-32">
-        {faq.items.map(({ question, answer }) => {
-          const isOpen = openIds.includes(question)
-          const panelId = `faq-panel-${question.slice(0, 24)}`
+      <div className="flex flex-col gap-16 md:gap-20 lg:flex-row lg:items-start lg:gap-x-32 lg:gap-y-0">
+        {columns.map((column) => (
+          <div
+            key={column[0].question}
+            className="flex flex-col gap-16 md:gap-20 lg:min-w-0 lg:flex-1"
+          >
+            {column.map(({ question, answer }) => {
+              const isOpen = openIds.includes(question)
+              const panelId = `faq-panel-${question.slice(0, 24)}`
 
-          return (
-            <div
-              key={question}
-              className="flex flex-col self-start rounded-[20px] bg-[#fafafa] p-16 md:p-20"
-            >
-              <button
-                type="button"
-                aria-expanded={isOpen}
-                aria-controls={panelId}
-                onClick={() => toggle(question)}
-                className="flex cursor-pointer items-center justify-between gap-16 text-left md:gap-20"
-              >
-                <span className="text-u-14 leading-[1.4286] font-medium md:text-u-16 md:leading-[1.5]">
-                  {question}
-                </span>
-                <img
-                  src={asset('icon-plus.webp')}
-                  alt=""
-                  className={`block h-[20px] w-[20px] shrink-0 transition-transform duration-200 ease-motion md:h-[24px] md:w-[24px] ${
-                    isOpen ? 'rotate-45 duration-[367ms]' : ''
-                  }`}
-                />
-              </button>
-
-              <div
-                id={panelId}
-                className={`grid transition-[grid-template-rows,margin-top] duration-200 ease-motion ${
-                  isOpen ? 'mt-12 grid-rows-[1fr] duration-[367ms]' : 'grid-rows-[0fr]'
-                }`}
-              >
-                <p
-                  className={`text-u-14 min-h-0 overflow-hidden leading-[1.4286] font-medium whitespace-pre-line text-ink-subtle transition-opacity duration-200 ease-motion ${
-                    isOpen ? 'opacity-100 delay-100 duration-[367ms]' : 'opacity-0'
-                  }`}
+              return (
+                <div
+                  key={question}
+                  className="relative flex flex-col rounded-[20px] bg-[#fafafa] p-16 md:p-20"
                 >
-                  {answer}
-                </p>
-              </div>
-            </div>
-          )
-        })}
+                  {/*
+                    Псевдоэлемент растягивает кнопку на всю карточку: у оригинала
+                    нажимается любая её точка, а не только строка с вопросом.
+                  */}
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() => toggle(question)}
+                    className="flex cursor-pointer items-center justify-between gap-16 text-left after:absolute after:inset-0 after:z-2 after:rounded-[inherit] after:content-[''] md:gap-20"
+                  >
+                    <span className="text-u-14 leading-[1.4286] font-medium md:text-u-16 md:leading-[1.5]">
+                      {question}
+                    </span>
+                    <img
+                      src={asset('icon-plus.webp')}
+                      alt=""
+                      className={`block h-[20px] w-[20px] shrink-0 transition-transform duration-200 ease-motion md:h-[24px] md:w-[24px] ${
+                        isOpen ? 'rotate-45 duration-[367ms]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  <div
+                    id={panelId}
+                    className={`grid transition-[grid-template-rows,margin-top] duration-200 ease-motion ${
+                      isOpen ? 'mt-12 grid-rows-[1fr] duration-[367ms]' : 'grid-rows-[0fr]'
+                    }`}
+                  >
+                    <p
+                      className={`text-u-14 min-h-0 overflow-hidden leading-[1.4286] font-medium whitespace-pre-line text-ink-subtle transition-opacity duration-200 ease-motion ${
+                        isOpen ? 'opacity-100 delay-100 duration-[367ms]' : 'opacity-0'
+                      }`}
+                    >
+                      {answer}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ))}
       </div>
     </section>
   )
