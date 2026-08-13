@@ -88,12 +88,17 @@ export function Header() {
         }`}
       >
         <a href={homeHref} aria-label="Снэпбилд" className="inline-flex justify-self-start">
+          {/*
+            Ширина в пикселях макета, а не фиксированная высота: у оригинала
+            лого задано как 111 макетных пикселей на мобильном и 153 дальше,
+            поэтому ниже 375 оно сжимается вместе со всем остальным.
+          */}
           <img
             src={asset('logo-snapbuild.svg')}
             alt="Снэпбилд"
             width={153}
             height={22}
-            className="block h-[18px] w-auto md:h-[20px]"
+            className="block h-auto w-111 md:w-153"
           />
         </a>
 
@@ -116,7 +121,7 @@ export function Header() {
           {/* При открытом меню кнопка гаснет, чтобы не спорить с крестиком. */}
           <a
             href={appUrl}
-            className={`inline-flex items-center justify-center rounded-[11px] bg-ink px-[14px] py-[8px] text-[14px] leading-[20px] font-semibold tracking-[-0.5px] text-ink-contrast transition duration-[180ms] hover:-translate-y-px hover:bg-[#242424] md:rounded-[12px] md:px-[20px] md:py-[10px] ${
+            className={`inline-flex items-center justify-center rounded-[11px] bg-ink px-14 py-8 text-[calc(14*var(--u))] leading-[calc(20/14)] font-semibold tracking-[-0.5px] text-ink-contrast transition duration-[180ms] hover:-translate-y-px hover:bg-[#242424] md:rounded-[12px] md:px-[20px] md:py-[10px] md:text-[14px] md:leading-[20px] ${
               isMenuOpen ? 'invisible opacity-0 lg:visible lg:opacity-100' : ''
             }`}
           >

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { CompareCell } from '../../content/compare'
 import { compare } from '../../content/compare'
 import { asset } from '../../lib/asset'
@@ -6,7 +7,23 @@ const cellClass =
   'text-u-12 flex items-center justify-center gap-4 px-14 text-center leading-[calc(14/12)] font-medium whitespace-pre-line md:text-u-14 md:leading-[calc(20/14)] lg:px-32'
 
 /** Вертикальные разделители стоят только между тремя средними колонками. */
-const dividerFor = (index: number) => (index >= 1 && index <= 3 ? 'border-r border-black/[0.06]' : '')
+const dividerFor = (index: number) =>
+  index >= 1 && index <= 3 ? 'compare-divider-x border-r border-black/[0.06]' : ''
+
+/*
+  Колонка подписей и колонка продукта — липкие. Ни position, ни left сюда
+  утилитами не добавлять: они действовали бы на всех ширинах, а липкость
+  нужна только ниже 768px. Всё, включая сдвиг второй колонки, — в theme.css.
+*/
+const stickyLabel = 'compare-sticky'
+const stickyBrand = 'compare-sticky compare-brand'
+
+/**
+ * Сдвиг градиентной рамки для строки: шапка 60 пикселей макета, дальше
+ * строки по 72. Считается один раз, а не на каждый рендер.
+ */
+const brandSlice = (rowIndex: number) =>
+  ({ '--brand-slice': rowIndex === 0 ? 0 : -(60 + (rowIndex - 1) * 72) }) as CSSProperties
 
 function CellContent({ cell }: { cell: CompareCell }) {
   return (
@@ -22,8 +39,11 @@ function CellContent({ cell }: { cell: CompareCell }) {
 /**
  * «Почему команды выбирают Снэпбилд». Таблица собрана гридом, а строки —
  * display:contents, поэтому колонки выравниваются сквозь всю таблицу.
- * Колонку продукта обводит градиентная рамка, нарисованная маской поверх.
- * Ниже 768px таблица не сжимается, а прокручивается по горизонтали.
+ *
+ * Выше 768px колонку продукта обводит градиентная рамка, нарисованная маской
+ * поверх таблицы. Ниже таблица прокручивается по горизонтали, и рамка
+ * переезжает на сами ячейки: маска на одном абсолютном элементе не может быть
+ * липкой вместе с колонкой. Детали — в блоке .compare-brand в theme.css.
  */
 export function Compare() {
   return (
@@ -40,14 +60,16 @@ export function Compare() {
         </p>
       </header>
 
-      <div className="overflow-x-auto px-16 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] md:px-0 [&::-webkit-scrollbar]:hidden">
+      {/* Ниже 768px полоса прокрутки идёт от края до края, без полей секции. */}
+      <div className="isolate overflow-x-auto bg-surface [-webkit-overflow-scrolling:touch] [scrollbar-width:none] md:bg-transparent [&::-webkit-scrollbar]:hidden">
         <div
           role="table"
-          className="relative grid w-690 grid-cols-[calc(90*var(--u))_calc(100*var(--u))_repeat(3,calc(120*var(--u)))_calc(140*var(--u))] grid-rows-[calc(60*var(--u))_repeat(4,calc(72*var(--u)))] overflow-hidden rounded-[calc(20*var(--u))] bg-surface md:w-auto md:auto-rows-[calc(100*var(--u))] md:grid-cols-6 md:grid-rows-none"
+          className="relative grid w-690 grid-cols-[calc(90*var(--u))_calc(100*var(--u))_repeat(3,calc(120*var(--u)))_calc(140*var(--u))] grid-rows-[minmax(calc(60*var(--u)),auto)_repeat(4,minmax(calc(72*var(--u)),auto))] bg-surface md:w-auto md:auto-rows-[calc(100*var(--u))] md:grid-cols-6 md:grid-rows-none md:overflow-hidden md:rounded-[calc(20*var(--u))]"
         >
           {/*
             Рамка вокруг колонки продукта: градиент, из которого маской
-            вырезана середина. Обычным border градиент не задать.
+            вырезана середина. Обычным border градиент не задать. Ниже 768px
+            её заменяют фоны на самих ячейках, поэтому здесь она снята.
           */}
           <div
             aria-hidden
@@ -64,21 +86,27 @@ export function Compare() {
               WebkitMaskComposite: 'xor',
               maskComposite: 'exclude',
             }}
-            className="pointer-events-none absolute top-0 bottom-0 left-90 w-100 rounded-[calc(20*var(--u))] bg-[linear-gradient(135deg,#ff6d3d_0%,#ff6ca7_52%,#bb6dff_100%)] p-2 md:left-[calc(100%/6)] md:w-[calc(100%/6)]"
+            className="pointer-events-none absolute top-0 bottom-0 hidden rounded-[calc(20*var(--u))] bg-[linear-gradient(135deg,#ff6d3d_0%,#ff6ca7_52%,#bb6dff_100%)] p-2 md:left-[calc(100%/6)] md:block md:w-[calc(100%/6)]"
           />
 
           <div role="row" className="contents">
             <div
-              className={`${cellClass} text-u-14 items-start justify-start border-b border-black/[0.06] text-left font-semibold text-ink-subtle md:text-u-16`}
+              className={`${cellClass} ${stickyLabel} compare-sticky--head compare-divider-y text-u-14 items-start justify-start border-b border-black/[0.06] text-left font-semibold text-ink-subtle md:text-u-16`}
               role="columnheader"
             >
-              <span className="self-center">{compare.head[0]}</span>
+              {/* Ниже 768px подпись колонки скрыта, но своё место сохраняет. */}
+              <span className="invisible self-center md:visible">{compare.head[0]}</span>
             </div>
             {compare.head.slice(1).map((title, index) => (
               <div
                 key={title}
                 role="columnheader"
-                className={`${cellClass} text-u-14 flex-col gap-8 border-b border-black/[0.06] font-semibold md:text-u-16 ${dividerFor(index)}`}
+                style={index === 0 ? brandSlice(0) : undefined}
+                className={`${cellClass} ${
+                  index === 0
+                    ? `${stickyBrand} compare-sticky--head compare-brand--head`
+                    : 'compare-divider-y border-b border-black/[0.06]'
+                } text-u-14 flex-col gap-8 font-semibold md:border-b md:border-black/[0.06] md:text-u-16 ${dividerFor(index)}`}
               >
                 {index === 0 ? (
                   <span className="bg-[linear-gradient(55.14deg,#ff6d3d_0%,#ff6ca7_46.15%,#bb6dff_94.23%)] bg-clip-text text-transparent">
@@ -91,16 +119,26 @@ export function Compare() {
             ))}
           </div>
 
-          {compare.rows.map((row) => (
+          {compare.rows.map((row, rowIndex) => (
             <div role="row" className="contents" key={row.label}>
-              <div role="rowheader" className={`${cellClass} justify-start text-left font-semibold`}>
+              <div
+                role="rowheader"
+                className={`${cellClass} ${stickyLabel} justify-start text-left font-semibold`}
+              >
                 {row.label}
               </div>
               {row.cells.map((cell, index) => (
                 <div
                   role="cell"
                   key={`${row.label}-${index}`}
-                  className={`${cellClass} ${dividerFor(index)}`}
+                  style={index === 0 ? brandSlice(rowIndex + 1) : undefined}
+                  className={`${cellClass} ${
+                    index === 0
+                      ? `${stickyBrand} ${
+                          rowIndex === compare.rows.length - 1 ? 'compare-brand--last' : ''
+                        }`
+                      : ''
+                  } ${dividerFor(index)}`}
                 >
                   <CellContent cell={cell} />
                 </div>

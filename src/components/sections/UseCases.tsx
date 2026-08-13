@@ -15,12 +15,17 @@ const allMedia = useCaseTabs.flatMap((tab) => tab.items.map((item) => item.media
  * «Любой контент в фирменном стиле»: пять вкладок по четыре пункта.
  * Пункты сменяются сами каждые восемь секунд, полоса под активным показывает
  * оставшееся время; дойдя до конца вкладки, лента переходит к следующей.
- * На мобильном кадр листается свайпом, активный пункт поднимается над кадром.
+ *
+ * Ниже 1024px кадр встаёт над списком, а не сбоку: order у него нулевой,
+ * у пунктов — первый. Сами пункты порядок не меняют и активный никуда не
+ * переезжает, он раскрывается на своём месте — иначе при каждой смене список
+ * перекладывался бы прямо во время анимации высоты. На мобильном кадр
+ * листается свайпом.
  */
 export function UseCases() {
   const [tabIndex, setTabIndex] = useState(0)
   const [pointIndex, setPointIndex] = useState(0)
-  const fillRef = useRef<HTMLSpanElement>(null)
+  const fillsRef = useRef<(HTMLSpanElement | null)[]>([])
   const touchStart = useRef<{ x: number; y: number } | null>(null)
 
   const goToFlat = (flat: number) => {
@@ -32,10 +37,20 @@ export function UseCases() {
   // Прогресс идёт мимо состояния: перерисовывать секцию с двумя десятками
   // картинок каждый кадр незачем, меняется только ширина одной полосы.
   useEffect(() => {
-    const fill = fillRef.current
-    if (fill) fill.style.transform = 'scaleX(0)'
+    // Обнуляем все полосы, а не одну активную: transform лежит инлайном, и
+    // у пройденных пунктов он иначе так и остаётся закрашенным до конца.
+    fillsRef.current.forEach((fill) => {
+      if (fill) fill.style.transform = 'scaleX(0)'
+    })
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const next = () => goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + 1)
+
+    // При отключённой анимации лента всё равно листается — двигается контент,
+    // а не картинка, — но полоса не ползёт, а просто ждёт своей смены.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const timer = window.setTimeout(next, POINT_DURATION)
+      return () => window.clearTimeout(timer)
+    }
 
     let frame = 0
     let startedAt: number | null = null
@@ -43,10 +58,11 @@ export function UseCases() {
     const tick = (time: number) => {
       if (startedAt === null) startedAt = time
       const progress = Math.min((time - startedAt) / POINT_DURATION, 1)
+      const fill = fillsRef.current[pointIndex]
       if (fill) fill.style.transform = `scaleX(${progress})`
 
       if (progress >= 1) {
-        goToFlat(tabIndex * POINTS_PER_TAB + pointIndex + 1)
+        next()
         return
       }
       frame = requestAnimationFrame(tick)
@@ -115,7 +131,7 @@ export function UseCases() {
         </header>
 
         <div className="flex flex-col gap-10 md:gap-24 lg:grid lg:grid-cols-[24.5%_minmax(0,1fr)] lg:items-stretch lg:gap-32">
-          {/* Ниже 1024px обёртка растворяется: активный пункт встаёт над кадром, остальные под ним. */}
+          {/* Ниже 1024px обёртка растворяется, и пункты становятся соседями кадра. */}
           <div className="contents lg:flex lg:flex-col lg:justify-end">
             {useCaseTabs[tabIndex].items.map((item, index) => {
               const isActive = index === pointIndex
@@ -124,9 +140,7 @@ export function UseCases() {
                   key={item.title}
                   type="button"
                   onClick={() => setPointIndex(index)}
-                  className={`relative flex flex-col gap-[5px] py-12 text-left md:py-16 lg:py-20 lg:first:pt-0 ${
-                    isActive ? '-order-1 pt-0 lg:order-0 lg:pt-20' : 'order-1 lg:order-0'
-                  }`}
+                  className="relative order-1 flex flex-col gap-[5px] py-12 text-left md:py-16 lg:py-20 lg:first:pt-0"
                 >
                   <h3
                     className={`text-u-16 leading-[calc(22*var(--u))] font-medium transition-colors duration-300 md:text-u-20 md:leading-[calc(28*var(--u))] md:tracking-[calc(-0.5*var(--u))] lg:leading-[1.4] ${
@@ -147,7 +161,9 @@ export function UseCases() {
 
                   <span className="absolute inset-x-0 bottom-[calc(-1*var(--rule))] h-[var(--rule)] bg-black/10">
                     <span
-                      ref={isActive ? fillRef : undefined}
+                      ref={(node) => {
+                        fillsRef.current[index] = node
+                      }}
                       className="block h-full w-full origin-left scale-x-0 bg-[linear-gradient(90deg,#ffcdb3_0%,#ffa4b6_38%,#ffb2e9_68%,#d4d6ff_100%)]"
                     />
                   </span>
